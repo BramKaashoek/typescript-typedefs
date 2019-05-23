@@ -1,0 +1,25 @@
+{
+  "name": "typescript-typedefs",
+  "dependencies": {
+    "graphql": "^14.3.0",
+    "reflect-metadata": "^0.1.13",
+    "ts-morph": "^2.1.2"
+  },
+  "scripts": {
+    "lint": "eslint --ext .ts src/",
+    "start": "ts-node src/example/index.ts",
+    "start:watch": "nodemon -e ts -w ./src --exec ts-node src/example/index.ts",
+    "tst": "mocha --require ts-node/register --recursive 'src/**/*.spec.ts' --timeout 8000",
+    "test": "npm run tst  && npm run lint",
+    "test:watch": "nodemon -e ts -w ./src --exec npm run tst"
+  },
+  "devDependencies": {
+    "@types/mocha": "^5.2.6",
+    "chai": "^4.2.0",
+    "mocha": "^6.1.4",
+    "nodemon": "^1.19.0",
+    "ts-node": "^8.0.2",
+    "ttypescript": "^1.5.6",
+    "typescript": "^3.4.5"
+  }
+}
