@@ -15,13 +15,16 @@ export interface IField {
   passedType: Function | string;
 }
 
-export const Type: ClassDecorator = (target: Function) => {
+export const Type = (): ClassDecorator => (target: Function) => {
   if (objectTypes.some(e => e.target.name === target.name))
     throw new Error(`Duplicate @Type ${target.name}`);
   objectTypes.push({ target, fields: [] });
 };
 
-export const Field = (passedType?: string | Function) => (klass, propertyKey) => {
+export const Field = (passedType?: string | Function): PropertyDecorator => (
+  klass,
+  propertyKey,
+) => {
   fields.push({
     target: klass.constructor,
     propertyKey: String(propertyKey),

@@ -9,10 +9,10 @@ export const generateTypeDefs = (klasses): string => {
 };
 
 const generateTypeDef = (objectType): any => {
-  return `type ${objectType.target.name} { ${objectType.fields.map(
+  return `type ${objectType.target.name} {\n ${objectType.fields.map(
     field => `${field.propertyKey}: ${field.type}`,
   ).join(`
-  `)}  }`;
+  `)}\n}`;
 };
 
 const enrichTypes = (klasses, objectTypes, fields) => {
@@ -51,9 +51,13 @@ const translateToGraphqlType = (getType, passedType, fieldName, className) => {
         return `[${GraphQLString}]`;
       case Boolean:
         return `[${GraphQLBoolean}]`;
+      case Number:
+        return `[${GraphQLFloat}]`;
     }
 
-    throw new Error(`Array ${fieldName} on ${className} has no type`);
+    throw new Error(
+      `Array ${fieldName} on ${className} has no type. Arrays must always be provided with a type.`,
+    );
   }
 
   switch (getType.prototype) {
