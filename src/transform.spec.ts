@@ -114,28 +114,35 @@ describe('floats and ints', () => {
     expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
       `type TestClass { floatArray: [Float] otherFloatArray: [Float] intArray: [Int] }`,
     );
-
-    @Type()
-    class Person {
-      @Field()
-      name: string;
-
-      @Field(String)
-      friendNames: string[];
-
-      @Field('Int')
-      apartmentNumber: number;
-
-      @Field()
-      universityGpa: number;
-    }
-
-    console.log(generateTypeDefs([Person]));
   });
 });
 
 describe('nested Types', () => {
-  it('can handle nested types');
+  beforeEach(() => {
+    objectTypes.length = 0;
+    fields.length = 0;
+  });
+
+  it('can handle nested types fields and arrays', () => {
+    @Type()
+    class Child {
+      @Field()
+      name: string;
+    }
+
+    @Type()
+    class Parent {
+      @Field()
+      child: Child;
+
+      @Field(Child)
+      children: Child[];
+    }
+
+    expect(removeWhiteSpace(generateTypeDefs([Parent]))).to.equal(
+      `type Parent { child: Child children: [Child] }`,
+    );
+  });
 });
 
 describe('nullable values', () => {

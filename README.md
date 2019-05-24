@@ -1,6 +1,6 @@
 # Typescript-Typedefs
 
-A small package meant to make it easier to combine (Apollo-)GraphQL and typescript.
+A small package meant to make it easier to combine (Apollo-)GraphQL and Typescript.
 
 With this package there is no need to define both typescript interfaces and GraphQL typeDefs. Just define your model as a class, use the decorators and call the `generateTypeDefs` function.
 

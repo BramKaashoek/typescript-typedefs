@@ -42,6 +42,7 @@ const enrichTypes = (klasses, objectTypes, fields) => {
 };
 
 const translateToGraphqlType = (getType, passedType, fieldName, className) => {
+  // array fields
   if (getType.prototype === Array.prototype) {
     if (typeof passedType === 'string')
       return `[${passedType.charAt(0).toUpperCase() + passedType.slice(1)}]`;
@@ -54,15 +55,17 @@ const translateToGraphqlType = (getType, passedType, fieldName, className) => {
       case Number:
         return `[${GraphQLFloat}]`;
     }
+    if (objectTypes.some(e => e.target.name === passedType.name)) return `[${passedType.name}]`;
 
     throw new Error(
       `Array ${fieldName} on ${className} has no type. Arrays must always be provided with a type.`,
     );
   }
 
+  // non-array basic type fields
   switch (getType.prototype) {
     case String.prototype:
-      return getType.name;
+      return GraphQLString;
     case Boolean.prototype:
       return GraphQLBoolean;
     case Number.prototype:
@@ -72,8 +75,9 @@ const translateToGraphqlType = (getType, passedType, fieldName, className) => {
       throw new Error(
         `Incorrect type passed for ${fieldName} on ${className}, must be 'Int' or 'Float'`,
       );
-
-    default:
-      throw new Error(`unknown type for ${getType.prototype} ${fieldName} on ${className}`);
   }
+  // nested types
+  if (objectTypes.some(e => e.target.name === getType.name)) return getType.name;
+
+  throw new Error(`unknown type for ${getType.prototype} ${fieldName} on ${className}`);
 };
