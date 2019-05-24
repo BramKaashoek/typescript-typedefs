@@ -15,8 +15,8 @@ export interface IField {
   passedType: Function | string;
 }
 
-export const Type = (): ClassDecorator => (target: Function) => {
-  if (objectTypes.some(e => e.target.name === target.name))
+export const Type = (): ClassDecorator => (target: Function): void => {
+  if (objectTypes.some((e): boolean => e.target.name === target.name))
     throw new Error(`Duplicate @Type ${target.name}`);
   objectTypes.push({ target, fields: [] });
 };
@@ -24,7 +24,7 @@ export const Type = (): ClassDecorator => (target: Function) => {
 export const Field = (passedType?: string | Function): PropertyDecorator => (
   klass,
   propertyKey,
-) => {
+): void => {
   fields.push({
     target: klass.constructor,
     propertyKey: String(propertyKey),

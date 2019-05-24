@@ -3,13 +3,15 @@ import { expect } from 'chai';
 import { generateTypeDefs } from './transform';
 const removeWhiteSpace = (string: string): string => string.replace(/\s+/g, ' ');
 
-describe('ObjectType and InputType', () => {
-  beforeEach(() => {
-    objectTypes.length = 0;
-    fields.length = 0;
-  });
+describe('ObjectType and InputType', (): void => {
+  beforeEach(
+    (): void => {
+      objectTypes.length = 0;
+      fields.length = 0;
+    },
+  );
 
-  it('type is expected to have atleast 1 field', () => {
+  it('type is expected to have atleast 1 field', (): void => {
     @Type()
     class TestClass {}
     try {
@@ -23,13 +25,15 @@ describe('ObjectType and InputType', () => {
   it('input is expected to have atleast 1 field');
 });
 
-describe('strings and bools', () => {
-  beforeEach(() => {
-    objectTypes.length = 0;
-    fields.length = 0;
-  });
+describe('strings and bools', (): void => {
+  beforeEach(
+    (): void => {
+      objectTypes.length = 0;
+      fields.length = 0;
+    },
+  );
 
-  it('a type can have a string or boolean field', () => {
+  it('a type can have a string or boolean field', (): void => {
     @Type()
     class TestClass {
       @Field()
@@ -40,11 +44,11 @@ describe('strings and bools', () => {
     }
 
     expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
-      `type TestClass { name: String isTrue: Boolean }`,
+      'type TestClass { name: String isTrue: Boolean }',
     );
   });
 
-  it('can have a string array or a boolean array', () => {
+  it('can have a string array or a boolean array', (): void => {
     @Type()
     class TestClass {
       @Field(String)
@@ -54,11 +58,11 @@ describe('strings and bools', () => {
     }
 
     expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
-      `type TestClass { names: [String] areTrue: [Boolean] }`,
+      'type TestClass { names: [String] areTrue: [Boolean] }',
     );
   });
 
-  it('can have an array type passed as string', () => {
+  it('can have an array type passed as string', (): void => {
     @Type()
     class TestClass {
       @Field('String')
@@ -69,18 +73,20 @@ describe('strings and bools', () => {
     }
 
     expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
-      `type TestClass { names: [String] lowercase: [String] }`,
+      'type TestClass { names: [String] lowercase: [String] }',
     );
   });
 });
 
-describe('floats and ints', () => {
-  beforeEach(() => {
-    objectTypes.length = 0;
-    fields.length = 0;
-  });
+describe('floats and ints', (): void => {
+  beforeEach(
+    (): void => {
+      objectTypes.length = 0;
+      fields.length = 0;
+    },
+  );
 
-  it('can handle float and int fields', () => {
+  it('can handle float and int fields', (): void => {
     @Type()
     class TestClass {
       @Field()
@@ -94,11 +100,11 @@ describe('floats and ints', () => {
     }
 
     expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
-      `type TestClass { someFloat: Float someInt: Int otherFloat: Float }`,
+      'type TestClass { someFloat: Float someInt: Int otherFloat: Float }',
     );
   });
 
-  it('can handle float and int arrays', () => {
+  it('can handle float and int arrays', (): void => {
     @Type()
     class TestClass {
       @Field('float')
@@ -112,18 +118,20 @@ describe('floats and ints', () => {
     }
 
     expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
-      `type TestClass { floatArray: [Float] otherFloatArray: [Float] intArray: [Int] }`,
+      'type TestClass { floatArray: [Float] otherFloatArray: [Float] intArray: [Int] }',
     );
   });
 });
 
-describe('nested Types', () => {
-  beforeEach(() => {
-    objectTypes.length = 0;
-    fields.length = 0;
-  });
+describe('nested Types', (): void => {
+  beforeEach(
+    (): void => {
+      objectTypes.length = 0;
+      fields.length = 0;
+    },
+  );
 
-  it('can handle nested types fields and arrays', () => {
+  it('can handle nested types fields and arrays', (): void => {
     @Type()
     class Child {
       @Field()
@@ -140,12 +148,12 @@ describe('nested Types', () => {
     }
 
     expect(removeWhiteSpace(generateTypeDefs([Parent]))).to.equal(
-      `type Parent { child: Child children: [Child] }`,
+      'type Parent { child: Child children: [Child] }',
     );
   });
 });
 
-describe('nullable values', () => {
+describe('nullable values', (): void => {
   it('can handle nullable fields');
   it('can handle nullable arrays');
 });
