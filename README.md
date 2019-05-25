@@ -41,3 +41,9 @@ type Person {
 ```
 
 which can then be used in `makeExecutableSchema()`
+
+## Todo
+
+- Add nullables (including nullable arrays and nullable array members)
+- Add inputType
+- Add ID

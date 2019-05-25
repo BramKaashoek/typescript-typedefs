@@ -145,10 +145,13 @@ describe('nested Types', (): void => {
 
       @Field(Child)
       children: Child[];
+
+      @Field('Child')
+      stringChildren: Child[];
     }
 
     expect(removeWhiteSpace(generateTypeDefs([Parent]))).to.equal(
-      'type Parent { child: Child children: [Child] }',
+      'type Parent { child: Child children: [Child] stringChildren: [Child] }',
     );
   });
 });

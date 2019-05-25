@@ -14,7 +14,7 @@ export const generateTypeDefs = (klasses): string => {
   `);
 };
 
-const generateTypeDef = (objectType): any => {
+const generateTypeDef = (objectType): string => {
   return `type ${objectType.target.name} {\n ${objectType.fields.map(
     (field): string => `${field.propertyKey}: ${field.type}`,
   ).join(`
@@ -54,26 +54,45 @@ const enrichTypes = (klasses, objectTypes, fields): IObjectType[] => {
 const translateToGraphqlType = (getType, passedType, fieldName, className): GraphQLScalarType => {
   // array fields
   if (getType.prototype === Array.prototype) {
-    if (typeof passedType === 'string')
-      return `[${passedType.charAt(0).toUpperCase() + passedType.slice(1)}]`;
+    if (!passedType)
+      throw new Error(
+        `Array ${fieldName} on ${className} has no type. Arrays must always be provided with a type.`,
+      );
 
-    switch (passedType) {
-    case String:
-      return `[${GraphQLString}]`;
-    case Boolean:
-      return `[${GraphQLBoolean}]`;
-    case Number:
-      return `[${GraphQLFloat}]`;
-    }
-    if (objectTypes.some((e): boolean => e.target.name === passedType.name))
-      return `[${passedType.name}]`;
+    const type =
+      typeof passedType === 'string'
+        ? getGraphqlTypeFromString(passedType)
+        : getGraphqlTypeFromType(passedType);
 
-    throw new Error(
-      `Array ${fieldName} on ${className} has no type. Arrays must always be provided with a type.`,
-    );
+    if (type) return `[${type}]`;
+    throw new Error(`Error: unknown type ${passedType} for Field ${fieldName} on ${className}.`);
   }
 
   // non-array basic type fields
+  const type = getGraphqlTypeFromType(getType, passedType);
+  if (type) return type;
+
+  throw new Error(`unknown type for ${getType.prototype} ${fieldName} on ${className}`);
+};
+
+const getGraphqlTypeFromString = (type: string): GraphQLScalarType | string => {
+  switch (type.toLowerCase()) {
+  case 'string':
+    return GraphQLString;
+  case 'int':
+    return GraphQLInt;
+  case 'float':
+    return GraphQLFloat;
+  case 'bool':
+  case 'boolean':
+    return GraphQLBoolean;
+  }
+
+  if (objectTypes.some((e): boolean => e.target.name === type)) return type;
+  return undefined;
+};
+
+const getGraphqlTypeFromType = (getType, passedType?: string): GraphQLScalarType => {
   switch (getType.prototype) {
   case String.prototype:
     return GraphQLString;
@@ -81,14 +100,11 @@ const translateToGraphqlType = (getType, passedType, fieldName, className): Grap
     return GraphQLBoolean;
   case Number.prototype:
     if (!passedType) return GraphQLFloat;
-    if (passedType.toLowerCase() === 'float') return GraphQLFloat;
-    if (passedType.toLowerCase() === 'int') return GraphQLInt;
-    throw new Error(
-      `Incorrect type passed for ${fieldName} on ${className}, must be 'Int' or 'Float'`,
-    );
+    if (passedType.toLowerCase() === 'int' || passedType.toLowerCase() === 'float')
+      return getGraphqlTypeFromString(passedType);
+    throw new Error('Incorrect field type for number, must be \'Int\' or \'Float\'');
   }
-  // nested types
-  if (objectTypes.some((e): boolean => e.target.name === getType.name)) return getType.name;
 
-  throw new Error(`unknown type for ${getType.prototype} ${fieldName} on ${className}`);
+  if (objectTypes.some((e): boolean => e.target.name === getType.name)) return getType.name;
+  return undefined;
 };
