@@ -1,8 +1,10 @@
+import { Int, Float, ID } from './types';
 import {
   GraphQLString,
   GraphQLBoolean,
   GraphQLFloat,
   GraphQLInt,
+  GraphQLID,
   GraphQLScalarType,
 } from 'graphql';
 import 'reflect-metadata';
@@ -59,10 +61,7 @@ const translateToGraphqlType = (getType, passedType, fieldName, className): Grap
         `Array ${fieldName} on ${className} has no type. Arrays must always be provided with a type.`,
       );
 
-    const type =
-      typeof passedType === 'string'
-        ? getGraphqlTypeFromString(passedType)
-        : getGraphqlTypeFromType(passedType);
+    const type = getGraphqlTypeFromType(passedType);
 
     if (type) return `[${type}]`;
     throw new Error(`Error: unknown type ${passedType} for Field ${fieldName} on ${className}.`);
@@ -75,34 +74,22 @@ const translateToGraphqlType = (getType, passedType, fieldName, className): Grap
   throw new Error(`unknown type for ${getType.prototype} ${fieldName} on ${className}`);
 };
 
-const getGraphqlTypeFromString = (type: string): GraphQLScalarType | string => {
-  switch (type.toLowerCase()) {
-  case 'string':
-    return GraphQLString;
-  case 'int':
-    return GraphQLInt;
-  case 'float':
-    return GraphQLFloat;
-  case 'bool':
-  case 'boolean':
-    return GraphQLBoolean;
-  }
-
-  if (objectTypes.some((e): boolean => e.target.name === type)) return type;
-  return undefined;
-};
-
-const getGraphqlTypeFromType = (getType, passedType?: string): GraphQLScalarType => {
+const getGraphqlTypeFromType = (getType, passedType?): GraphQLScalarType => {
   switch (getType.prototype) {
   case String.prototype:
+    if (passedType && passedType.prototype === ID.prototype) return GraphQLID;
     return GraphQLString;
   case Boolean.prototype:
     return GraphQLBoolean;
   case Number.prototype:
     if (!passedType) return GraphQLFloat;
-    if (passedType.toLowerCase() === 'int' || passedType.toLowerCase() === 'float')
-      return getGraphqlTypeFromString(passedType);
-    throw new Error('Incorrect field type for number, must be \'Int\' or \'Float\'');
+    if (passedType.prototype === Int.prototype) return GraphQLInt;
+    if (passedType.prototype === Float.prototype) return GraphQLFloat;
+    throw new Error('Incorrect field type for number, must be Int or Float');
+  case Float.prototype:
+    return GraphQLFloat;
+  case Int.prototype:
+    return GraphQLInt;
   }
 
   if (objectTypes.some((e): boolean => e.target.name === getType.name)) return getType.name;

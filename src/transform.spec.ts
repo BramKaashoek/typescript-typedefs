@@ -1,3 +1,4 @@
+import { Int, Float } from './types';
 import { Type, Field, objectTypes, fields } from './decorators';
 import { expect } from 'chai';
 import { generateTypeDefs } from './transform';
@@ -53,27 +54,13 @@ describe('strings and bools', (): void => {
     class TestClass {
       @Field(String)
       names: string[];
+
       @Field(Boolean)
       areTrue: boolean[];
     }
 
     expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
       'type TestClass { names: [String] areTrue: [Boolean] }',
-    );
-  });
-
-  it('can have an array type passed as string', (): void => {
-    @Type()
-    class TestClass {
-      @Field('String')
-      names: string[];
-
-      @Field('string')
-      lowercase: string[];
-    }
-
-    expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
-      'type TestClass { names: [String] lowercase: [String] }',
     );
   });
 });
@@ -92,10 +79,10 @@ describe('floats and ints', (): void => {
       @Field()
       someFloat: number;
 
-      @Field('int')
+      @Field(Int)
       someInt: number;
 
-      @Field('float')
+      @Field(Float)
       otherFloat: number;
     }
 
@@ -107,13 +94,13 @@ describe('floats and ints', (): void => {
   it('can handle float and int arrays', (): void => {
     @Type()
     class TestClass {
-      @Field('float')
+      @Field(Float)
       floatArray: number[];
 
       @Field(Number)
       otherFloatArray: number[];
 
-      @Field('int')
+      @Field(Int)
       intArray: number[];
     }
 
@@ -145,13 +132,10 @@ describe('nested Types', (): void => {
 
       @Field(Child)
       children: Child[];
-
-      @Field('Child')
-      stringChildren: Child[];
     }
 
     expect(removeWhiteSpace(generateTypeDefs([Parent]))).to.equal(
-      'type Parent { child: Child children: [Child] stringChildren: [Child] }',
+      'type Parent { child: Child children: [Child] }',
     );
   });
 });
