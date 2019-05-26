@@ -1,4 +1,4 @@
-import { Int, Float } from './types';
+import { Int, Float, ID } from './types';
 import { Type, Field, objectTypes, fields } from './decorators';
 import { expect } from 'chai';
 import { generateTypeDefs } from './transform';
@@ -143,4 +143,20 @@ describe('nested Types', (): void => {
 describe('nullable values', (): void => {
   it('can handle nullable fields');
   it('can handle nullable arrays');
+});
+
+describe('IDs', (): void => {
+  it('can handle IDs and ID arrays', (): void => {
+    @Type()
+    class TestClass {
+      @Field(ID)
+      id: string;
+
+      @Field(ID)
+      ids: string[];
+    }
+    expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
+      'type TestClass { id: ID ids: [ID] }',
+    );
+  });
 });

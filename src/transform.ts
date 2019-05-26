@@ -62,7 +62,6 @@ const translateToGraphqlType = (getType, passedType, fieldName, className): Grap
       );
 
     const type = getGraphqlTypeFromType(passedType);
-
     if (type) return `[${type}]`;
     throw new Error(`Error: unknown type ${passedType} for Field ${fieldName} on ${className}.`);
   }
@@ -70,7 +69,6 @@ const translateToGraphqlType = (getType, passedType, fieldName, className): Grap
   // non-array basic type fields
   const type = getGraphqlTypeFromType(getType, passedType);
   if (type) return type;
-
   throw new Error(`unknown type for ${getType.prototype} ${fieldName} on ${className}`);
 };
 
@@ -90,6 +88,8 @@ const getGraphqlTypeFromType = (getType, passedType?): GraphQLScalarType => {
     return GraphQLFloat;
   case Int.prototype:
     return GraphQLInt;
+  case ID.prototype:
+    return GraphQLID;
   }
 
   if (objectTypes.some((e): boolean => e.target.name === getType.name)) return getType.name;

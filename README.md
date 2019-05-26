@@ -15,7 +15,7 @@ With this package there is no need to define both typescript interfaces and Grap
         @Field(String)
         friendNames: string[]
 
-        @Field('Int')
+        @Field(Int)
         apartmentNumber: number
 
         @Field()
@@ -46,4 +46,3 @@ which can then be used in `makeExecutableSchema()`
 
 - Add nullables (including nullable arrays and nullable array members)
 - Add inputType
-- Add ID
