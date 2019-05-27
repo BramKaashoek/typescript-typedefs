@@ -1,6 +1,6 @@
 {
   "name": "typescript-typedefs",
-  "version": "0.0.6",
+  "version": "0.0.6 ",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -32,7 +32,6 @@
     "eslint-config-prettier": "^4.2.0",
     "mocha": "^6.1.4",
     "nodemon": "^1.19.0",
-    "ts-node": "^8.0.2",
     "typescript": "^3.4.5"
   }
 }
