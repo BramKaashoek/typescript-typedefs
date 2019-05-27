@@ -1,4 +1,4 @@
-# Typescript-Typedefs !Beta version!
+# Typescript-Typedefs
 
 A small package meant to make it easier to combine (Apollo-)GraphQL and Typescript.
 
