@@ -10,7 +10,13 @@ With this package there is no need to define both typescript interfaces and Grap
 import {Type, Field, ID, Int, generateTypeDefs} from 'typescript-typedefs'
 
     @Type()
-    class Person{
+    class Course {
+      @Field()
+      name: string
+    }
+
+    @Type()
+    class Student {
         @Field(ID)
         id: string
 
@@ -21,24 +27,32 @@ import {Type, Field, ID, Int, generateTypeDefs} from 'typescript-typedefs'
         friendNames: string[]
 
         @Field(Int)
-        apartmentNumber: number
+        room: number
 
         @Field()
-        universityGpa: number
+        gpa: number
+
+        @Field(Course)
+        courses: Course[]
     }
 
-  generateTypeDefs([Person])
+  generateTypeDefs([Course, Person])
 ```
 
 results in
 
 ```
-type Person {
+type Course {
+ name: String
+}
+
+type Student {
   id: ID
   name: String
   friendNames: [String]
-  apartmentNumber: Int
-  universityGpa: Float
+  room: Int
+  gpa: Float
+  courses: [Course]
 }
 ```
 
@@ -47,5 +61,4 @@ which can then be used in `makeExecutableSchema()` from [Apollo server.](https:/
 ## Todo
 
 - Add nullables (including nullable arrays and nullable array members)
-- Add inputType
 - Add export to file
