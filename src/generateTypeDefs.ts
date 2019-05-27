@@ -11,28 +11,35 @@ import 'reflect-metadata';
 import { types, fields, IType, IField, inputTypes } from './decorators';
 
 export const generateTypeDefs = (klasses): string => {
+  // all types
   const enrichedTypes = enrichTypes(klasses, types, fields);
-  const typesAsString = enrichedTypes.map((type): string => generateTypeString(type)).join('\n');
+  const typesAsString = enrichedTypes.map((type): string => generateTypeString(type)).join('\n\n');
+
+  // all inputTypes
   const enrichedInputTypes = enrichTypes(klasses, inputTypes, fields);
   const inputTypesAsString = enrichedInputTypes
     .map((inputType): string => generateTypeString(inputType, true))
-    .join('\n');
+    .join('\n\n');
 
+  // return based on presence of types/inputTypes
   if (!enrichedTypes.length) return inputTypesAsString;
   if (!enrichedInputTypes.length) return typesAsString;
-  return typesAsString + '\n' + inputTypesAsString;
+  return typesAsString + '\n\n' + inputTypesAsString;
 };
 
 const generateTypeString = (type, isInputType = false): string => {
   const typeName = isInputType ? 'inputType' : 'type';
+
   return `${typeName} ${type.target.name} {\n${type.fields
-    .map((field): string => `  ${field.propertyKey}: ${field.type}`)
+    .map((field): string => `  ${field.propertyKey}: ${field.type}${field.nullable ? '' : '!'}`)
     .join('\n')}\n}`;
 };
 
 const enrichTypes = (klasses, types, fields): IType[] => {
   const names = klasses.map((klass): string => klass.name);
   const selectedTypes = types.filter((e): boolean => names.includes(e.target.name));
+
+  // match fields to types
   const typesWithFields = selectedTypes.map(
     (obj): IType => {
       obj.fields = fields
@@ -58,6 +65,7 @@ const enrichTypes = (klasses, types, fields): IType[] => {
     },
   );
 
+  // check whether each type/inputType has at least 1 field
   typesWithFields.map(
     (type): void => {
       if (!type.fields.length)
@@ -89,7 +97,7 @@ const translateToGraphqlType = (
     );
   }
 
-  // non-array basic type fields
+  // non-array fields
   const type = getGraphqlTypeFromType(getType, types, passedType);
   if (type) return type;
   throw new Error(
@@ -100,6 +108,7 @@ const translateToGraphqlType = (
 };
 
 const getGraphqlTypeFromType = (getType, types, passedType?): GraphQLScalarType => {
+  // if type is a standard type
   switch (getType.prototype) {
   case String.prototype:
     if (passedType && passedType.prototype === ID.prototype) return GraphQLID;
@@ -119,6 +128,8 @@ const getGraphqlTypeFromType = (getType, types, passedType?): GraphQLScalarType 
     return GraphQLID;
   }
 
+  // if type is another class which is also being generated
   if (types.some((e): boolean => e.target.name === getType.name)) return getType.name;
+
   return undefined;
 };

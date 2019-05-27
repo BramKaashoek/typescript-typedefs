@@ -60,5 +60,6 @@ which can then be used in `makeExecutableSchema()` from [Apollo server.](https:/
 
 ## Todo
 
-- Add nullables (including nullable arrays and nullable array members)
-- Add export to file
+- Add nullables array elements: `Field({nullable: elementsAndArray})`
+- Add syntax for explicit arrays: `Field([String])`
+- Add export typeDefs to file

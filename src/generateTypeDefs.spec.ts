@@ -1,7 +1,7 @@
 import { Int, Float, ID } from './types';
 import { Type, InputType, Field, types, fields, inputTypes } from './decorators';
 import { expect } from 'chai';
-import { generateTypeDefs } from './transform';
+import { generateTypeDefs } from './generateTypeDefs';
 
 const removeWhiteSpace = (string: string): string => string.replace(/\s+/g, ' ');
 
@@ -66,7 +66,7 @@ describe('strings and bools', (): void => {
     }
 
     expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
-      'type TestClass { name: String isTrue: Boolean }',
+      'type TestClass { name: String! isTrue: Boolean! }',
     );
   });
 
@@ -81,7 +81,7 @@ describe('strings and bools', (): void => {
     }
 
     expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
-      'type TestClass { names: [String] areTrue: [Boolean] }',
+      'type TestClass { names: [String]! areTrue: [Boolean]! }',
     );
   });
 });
@@ -109,7 +109,7 @@ describe('floats and ints', (): void => {
     }
 
     expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
-      'type TestClass { someFloat: Float someInt: Int otherFloat: Float }',
+      'type TestClass { someFloat: Float! someInt: Int! otherFloat: Float! }',
     );
   });
 
@@ -127,7 +127,7 @@ describe('floats and ints', (): void => {
     }
 
     expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
-      'type TestClass { floatArray: [Float] otherFloatArray: [Float] intArray: [Int] }',
+      'type TestClass { floatArray: [Float]! otherFloatArray: [Float]! intArray: [Int]! }',
     );
   });
 });
@@ -158,21 +158,9 @@ describe('nested Types', (): void => {
     }
 
     expect(removeWhiteSpace(generateTypeDefs([Parent, Child]))).to.equal(
-      'type Child { name: String } type Parent { child: Child children: [Child] }',
+      'type Child { name: String! } type Parent { child: Child! children: [Child]! }',
     );
   });
-});
-
-describe('nullable values', (): void => {
-  beforeEach(
-    (): void => {
-      types.length = 0;
-      inputTypes.length = 0;
-      fields.length = 0;
-    },
-  );
-  it('can handle nullable fields');
-  it('can handle nullable arrays');
 });
 
 describe('IDs', (): void => {
@@ -194,8 +182,36 @@ describe('IDs', (): void => {
       ids: string[];
     }
     expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
-      'type TestClass { id: ID ids: [ID] }',
+      'type TestClass { id: ID! ids: [ID]! }',
     );
+  });
+});
+
+describe('nullable values', (): void => {
+  beforeEach(
+    (): void => {
+      types.length = 0;
+      inputTypes.length = 0;
+      fields.length = 0;
+    },
+  );
+
+  it('can handle object args', (): void => {
+    @Type()
+    class TestClass {
+      @Field({ type: ID })
+      id: string;
+    }
+    expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal('type TestClass { id: ID! }');
+  });
+
+  it('can handle nullable fields', (): void => {
+    @Type()
+    class TestClass {
+      @Field({ type: ID, nullable: true })
+      id?: string;
+    }
+    expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal('type TestClass { id: ID }');
   });
 });
 
@@ -232,9 +248,8 @@ describe('inputType', (): void => {
       @Field(Course)
       classes: Course[];
     }
-
     expect(removeWhiteSpace(generateTypeDefs([TestClass, Course]))).to.equal(
-      'inputType Course { name: String } inputType TestClass { id: ID name: String gpa: Float classRank: Int classes: [Course] }',
+      'inputType Course { name: String! } inputType TestClass { id: ID! name: String! gpa: Float! classRank: Int! classes: [Course]! }',
     );
   });
 });
