@@ -1,7 +1,11 @@
 {
   "name": "typescript-typedefs",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BramKaashoek/typescript-typedefs"
+  },
   "scripts": {
     "lint": "eslint --ext .ts src/",
     "tst": "mocha --require ts-node/register --recursive 'src/**/*.spec.ts' --timeout 8000",

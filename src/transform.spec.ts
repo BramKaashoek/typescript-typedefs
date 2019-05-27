@@ -1,35 +1,56 @@
 import { Int, Float, ID } from './types';
-import { Type, Field, objectTypes, fields } from './decorators';
+import { Type, InputType, Field, types, fields, inputTypes } from './decorators';
 import { expect } from 'chai';
 import { generateTypeDefs } from './transform';
+
 const removeWhiteSpace = (string: string): string => string.replace(/\s+/g, ' ');
 
 describe('ObjectType and InputType', (): void => {
   beforeEach(
     (): void => {
-      objectTypes.length = 0;
+      types.length = 0;
+      inputTypes.length = 0;
       fields.length = 0;
     },
   );
 
   it('type is expected to have atleast 1 field', (): void => {
+    let error: any = {};
+
     @Type()
     class TestClass {}
+
     try {
       generateTypeDefs([TestClass]);
     } catch (err) {
-      expect(err).to.exist;
-      expect(err.message).to.equal('@Type TestClass must contain at least 1 @Field');
+      error = err;
     }
+    expect(error).to.exist;
+    expect(error.message).to.equal('Class TestClass must contain at least 1 @Field');
   });
 
-  it('input is expected to have atleast 1 field');
+  it('inputType is expected to have atleast 1 field', (): void => {
+    let error: any = {};
+
+    @InputType()
+    class TestClass {}
+
+    try {
+      generateTypeDefs([TestClass]);
+    } catch (err) {
+      error = err;
+    }
+
+    expect(error).to.exist;
+    expect(error.message).to.equal('Class TestClass must contain at least 1 @Field');
+  });
 });
 
 describe('strings and bools', (): void => {
   beforeEach(
     (): void => {
-      objectTypes.length = 0;
+      types.length = 0;
+      inputTypes.length = 0;
       fields.length = 0;
     },
   );
@@ -68,7 +89,8 @@ describe('strings and bools', (): void => {
 describe('floats and ints', (): void => {
   beforeEach(
     (): void => {
-      objectTypes.length = 0;
+      types.length = 0;
+      inputTypes.length = 0;
       fields.length = 0;
     },
   );
@@ -113,7 +135,8 @@ describe('floats and ints', (): void => {
 describe('nested Types', (): void => {
   beforeEach(
     (): void => {
-      objectTypes.length = 0;
+      types.length = 0;
+      inputTypes.length = 0;
       fields.length = 0;
     },
   );
@@ -134,18 +157,33 @@ describe('nested Types', (): void => {
       children: Child[];
     }
 
-    expect(removeWhiteSpace(generateTypeDefs([Parent]))).to.equal(
-      'type Parent { child: Child children: [Child] }',
+    expect(removeWhiteSpace(generateTypeDefs([Parent, Child]))).to.equal(
+      'type Child { name: String } type Parent { child: Child children: [Child] }',
     );
   });
 });
 
 describe('nullable values', (): void => {
+  beforeEach(
+    (): void => {
+      types.length = 0;
+      inputTypes.length = 0;
+      fields.length = 0;
+    },
+  );
   it('can handle nullable fields');
   it('can handle nullable arrays');
 });
 
 describe('IDs', (): void => {
+  beforeEach(
+    (): void => {
+      types.length = 0;
+      inputTypes.length = 0;
+      fields.length = 0;
+    },
+  );
+
   it('can handle IDs and ID arrays', (): void => {
     @Type()
     class TestClass {
@@ -157,6 +195,46 @@ describe('IDs', (): void => {
     }
     expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
       'type TestClass { id: ID ids: [ID] }',
+    );
+  });
+});
+
+describe('inputType', (): void => {
+  beforeEach(
+    (): void => {
+      types.length = 0;
+      inputTypes.length = 0;
+      fields.length = 0;
+    },
+  );
+
+  it('can handle inputTypes with all fields', (): void => {
+    @InputType()
+    class Course {
+      @Field()
+      name: string;
+    }
+
+    @InputType()
+    class TestClass {
+      @Field(ID)
+      id: string;
+
+      @Field()
+      name: string;
+
+      @Field()
+      gpa: number;
+
+      @Field(Int)
+      classRank: number;
+
+      @Field(Course)
+      classes: Course[];
+    }
+
+    expect(removeWhiteSpace(generateTypeDefs([TestClass, Course]))).to.equal(
+      'inputType Course { name: String } inputType TestClass { id: ID name: String gpa: Float classRank: Int classes: [Course] }',
     );
   });
 });

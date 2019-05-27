@@ -1,4 +1,4 @@
-# Typescript-Typedefs
+# Typescript-Typedefs !Beta version!
 
 A small package meant to make it easier to combine (Apollo-)GraphQL and Typescript.
 
@@ -7,8 +7,13 @@ With this package there is no need to define both typescript interfaces and Grap
 ## Example
 
 ```
+import {Type, Field, ID, Int, generateTypeDefs} from 'typescript-typedefs'
+
     @Type()
     class Person{
+        @Field(ID)
+        id: string
+
         @Field()
         name: string
 
@@ -21,18 +26,15 @@ With this package there is no need to define both typescript interfaces and Grap
         @Field()
         universityGpa: number
     }
-```
 
-followed by
-
-```
-generateTypeDefs([Person])
+  generateTypeDefs([Person])
 ```
 
 results in
 
 ```
 type Person {
+  id: ID
   name: String
   friendNames: [String]
   apartmentNumber: Int
@@ -40,9 +42,10 @@ type Person {
 }
 ```
 
-which can then be used in `makeExecutableSchema()`
+which can then be used in `makeExecutableSchema()` from [Apollo server.](https://www.npmjs.com/package/apollo-server)
 
 ## Todo
 
 - Add nullables (including nullable arrays and nullable array members)
 - Add inputType
+- Add export to file

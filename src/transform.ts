@@ -8,26 +8,33 @@ import {
   GraphQLScalarType,
 } from 'graphql';
 import 'reflect-metadata';
-import { objectTypes, fields, IObjectType, IField } from './decorators';
+import { types, fields, IType, IField, inputTypes } from './decorators';
 
 export const generateTypeDefs = (klasses): string => {
-  const enrichedTypes = enrichTypes(klasses, objectTypes, fields);
-  return enrichedTypes.map(generateTypeDef).join(`
-  `);
+  const enrichedTypes = enrichTypes(klasses, types, fields);
+  const typesAsString = enrichedTypes.map((type): string => generateTypeString(type)).join('\n');
+  const enrichedInputTypes = enrichTypes(klasses, inputTypes, fields);
+  const inputTypesAsString = enrichedInputTypes
+    .map((inputType): string => generateTypeString(inputType, true))
+    .join('\n');
+
+  if (!enrichedTypes.length) return inputTypesAsString;
+  if (!enrichedInputTypes.length) return typesAsString;
+  return typesAsString + '\n' + inputTypesAsString;
 };
 
-const generateTypeDef = (objectType): string => {
-  return `type ${objectType.target.name} {\n ${objectType.fields.map(
-    (field): string => `${field.propertyKey}: ${field.type}`,
-  ).join(`
-  `)}\n}`;
+const generateTypeString = (type, isInputType = false): string => {
+  const typeName = isInputType ? 'inputType' : 'type';
+  return `${typeName} ${type.target.name} {\n${type.fields
+    .map((field): string => `  ${field.propertyKey}: ${field.type}`)
+    .join('\n')}\n}`;
 };
 
-const enrichTypes = (klasses, objectTypes, fields): IObjectType[] => {
+const enrichTypes = (klasses, types, fields): IType[] => {
   const names = klasses.map((klass): string => klass.name);
-  const selectedObjectTypes = objectTypes.filter((e): boolean => names.includes(e.target.name));
-  const objectsWithFields = selectedObjectTypes.map(
-    (obj): IObjectType => {
+  const selectedTypes = types.filter((e): boolean => names.includes(e.target.name));
+  const typesWithFields = selectedTypes.map(
+    (obj): IType => {
       obj.fields = fields
         .filter((field): boolean => field.target.name === obj.target.name)
         .map(
@@ -42,6 +49,7 @@ const enrichTypes = (klasses, objectTypes, fields): IObjectType[] => {
               field.passedType,
               field.propertyKey,
               obj.target.name,
+              selectedTypes,
             );
             return field;
           },
@@ -50,10 +58,23 @@ const enrichTypes = (klasses, objectTypes, fields): IObjectType[] => {
     },
   );
 
-  return objectsWithFields;
+  typesWithFields.map(
+    (type): void => {
+      if (!type.fields.length)
+        throw new Error(`Class ${type.target.name} must contain at least 1 @Field`);
+    },
+  );
+
+  return typesWithFields;
 };
 
-const translateToGraphqlType = (getType, passedType, fieldName, className): GraphQLScalarType => {
+const translateToGraphqlType = (
+  getType,
+  passedType,
+  fieldName,
+  className,
+  types,
+): GraphQLScalarType => {
   // array fields
   if (getType.prototype === Array.prototype) {
     if (!passedType)
@@ -61,18 +82,24 @@ const translateToGraphqlType = (getType, passedType, fieldName, className): Grap
         `Array ${fieldName} on ${className} has no type. Arrays must always be provided with a type.`,
       );
 
-    const type = getGraphqlTypeFromType(passedType);
+    const type = getGraphqlTypeFromType(passedType, types);
     if (type) return `[${type}]`;
-    throw new Error(`Error: unknown type ${passedType} for Field ${fieldName} on ${className}.`);
+    throw new Error(
+      `Error: unknown type ${passedType} for Field ${fieldName} on ${className}. If it's a class, did you forget to add it to generateTypeDefs()?`,
+    );
   }
 
   // non-array basic type fields
-  const type = getGraphqlTypeFromType(getType, passedType);
+  const type = getGraphqlTypeFromType(getType, types, passedType);
   if (type) return type;
-  throw new Error(`unknown type for ${getType.prototype} ${fieldName} on ${className}`);
+  throw new Error(
+    `unknown type for ${fieldName}: ${
+      getType.name
+    } on ${className}. If it's a class, did you forget to add it to generateTypeDefs()?`,
+  );
 };
 
-const getGraphqlTypeFromType = (getType, passedType?): GraphQLScalarType => {
+const getGraphqlTypeFromType = (getType, types, passedType?): GraphQLScalarType => {
   switch (getType.prototype) {
   case String.prototype:
     if (passedType && passedType.prototype === ID.prototype) return GraphQLID;
@@ -92,6 +119,6 @@ const getGraphqlTypeFromType = (getType, passedType?): GraphQLScalarType => {
     return GraphQLID;
   }
 
-  if (objectTypes.some((e): boolean => e.target.name === getType.name)) return getType.name;
+  if (types.some((e): boolean => e.target.name === getType.name)) return getType.name;
   return undefined;
 };
