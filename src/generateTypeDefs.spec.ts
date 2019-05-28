@@ -249,7 +249,7 @@ describe('InputType', (): void => {
       classes: Course[];
     }
     expect(removeWhiteSpace(generateTypeDefs([TestClass, Course]))).to.equal(
-      'inputType Course { name: String! } inputType TestClass { id: ID! name: String! gpa: Float! classRank: Int! classes: [Course]! }',
+      'input Course { name: String! } input TestClass { id: ID! name: String! gpa: Float! classRank: Int! classes: [Course]! }',
     );
   });
 });
