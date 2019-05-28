@@ -28,7 +28,7 @@ export const generateTypeDefs = (klasses): string => {
 };
 
 const generateTypeString = (type, isInputType = false): string => {
-  const typeName = isInputType ? 'inputType' : 'type';
+  const typeName = isInputType ? 'input' : 'type';
 
   return `${typeName} ${type.target.name} {\n${type.fields
     .map((field): string => `  ${field.propertyKey}: ${field.type}${field.nullable ? '' : '!'}`)
