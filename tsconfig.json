@@ -7,9 +7,10 @@
     "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
+    "declaration": true,
+    "outDir": "dist",
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "outDir": "dist"
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]

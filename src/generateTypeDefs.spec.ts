@@ -5,7 +5,7 @@ import { generateTypeDefs } from './generateTypeDefs';
 
 const removeWhiteSpace = (string: string): string => string.replace(/\s+/g, ' ');
 
-describe('ObjectType and InputType', (): void => {
+describe('Type and InputType', (): void => {
   beforeEach(
     (): void => {
       types.length = 0;
@@ -14,7 +14,7 @@ describe('ObjectType and InputType', (): void => {
     },
   );
 
-  it('type is expected to have atleast 1 field', (): void => {
+  it('Type is expected to have atleast 1 field', (): void => {
     let error: any = {};
 
     @Type()
@@ -29,7 +29,7 @@ describe('ObjectType and InputType', (): void => {
     expect(error.message).to.equal('Class TestClass must contain at least 1 @Field');
   });
 
-  it('inputType is expected to have atleast 1 field', (): void => {
+  it('InputType is expected to have atleast 1 field', (): void => {
     let error: any = {};
 
     @InputType()
@@ -46,7 +46,7 @@ describe('ObjectType and InputType', (): void => {
   });
 });
 
-describe('strings and bools', (): void => {
+describe('Strings and bools', (): void => {
   beforeEach(
     (): void => {
       types.length = 0;
@@ -55,7 +55,7 @@ describe('strings and bools', (): void => {
     },
   );
 
-  it('a type can have a string or boolean field', (): void => {
+  it('aA type can have a string or boolean field', (): void => {
     @Type()
     class TestClass {
       @Field()
@@ -86,7 +86,7 @@ describe('strings and bools', (): void => {
   });
 });
 
-describe('floats and ints', (): void => {
+describe('Floats and ints', (): void => {
   beforeEach(
     (): void => {
       types.length = 0;
@@ -132,7 +132,7 @@ describe('floats and ints', (): void => {
   });
 });
 
-describe('nested Types', (): void => {
+describe('Nested Types', (): void => {
   beforeEach(
     (): void => {
       types.length = 0;
@@ -187,7 +187,7 @@ describe('IDs', (): void => {
   });
 });
 
-describe('nullable values', (): void => {
+describe('Nullable values', (): void => {
   beforeEach(
     (): void => {
       types.length = 0;
@@ -215,7 +215,7 @@ describe('nullable values', (): void => {
   });
 });
 
-describe('inputType', (): void => {
+describe('InputType', (): void => {
   beforeEach(
     (): void => {
       types.length = 0;

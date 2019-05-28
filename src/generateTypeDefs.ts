@@ -110,22 +110,22 @@ const translateToGraphqlType = (
 const getGraphqlTypeFromType = (getType, types, passedType?): GraphQLScalarType => {
   // if type is a standard type
   switch (getType.prototype) {
-  case String.prototype:
-    if (passedType && passedType.prototype === ID.prototype) return GraphQLID;
-    return GraphQLString;
-  case Boolean.prototype:
-    return GraphQLBoolean;
-  case Number.prototype:
-    if (!passedType) return GraphQLFloat;
-    if (passedType.prototype === Int.prototype) return GraphQLInt;
-    if (passedType.prototype === Float.prototype) return GraphQLFloat;
-    throw new Error('Incorrect field type for number, must be Int or Float');
-  case Float.prototype:
-    return GraphQLFloat;
-  case Int.prototype:
-    return GraphQLInt;
-  case ID.prototype:
-    return GraphQLID;
+    case String.prototype:
+      if (passedType && passedType.prototype === ID.prototype) return GraphQLID;
+      return GraphQLString;
+    case Boolean.prototype:
+      return GraphQLBoolean;
+    case Number.prototype:
+      if (!passedType) return GraphQLFloat;
+      if (passedType.prototype === Int.prototype) return GraphQLInt;
+      if (passedType.prototype === Float.prototype) return GraphQLFloat;
+      throw new Error('Incorrect field type for number, must be Int or Float');
+    case Float.prototype:
+      return GraphQLFloat;
+    case Int.prototype:
+      return GraphQLInt;
+    case ID.prototype:
+      return GraphQLID;
   }
 
   // if type is another class which is also being generated

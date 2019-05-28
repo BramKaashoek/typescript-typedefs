@@ -1,7 +1,8 @@
 {
   "name": "typescript-typedefs",
-  "version": "0.0.6 ",
+  "version": "0.0.7",
   "license": "MIT",
+  "author": "Bram Kaashoek",
   "repository": {
     "type": "git",
     "url": "https://github.com/BramKaashoek/typescript-typedefs"
@@ -13,7 +14,11 @@
     "interfaces",
     "decorators"
   ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
+    "build": "npm run format && npm run test && tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "eslint --ext .ts src/",
     "tst": "mocha --require ts-node/register --recursive 'src/**/*.spec.ts' --timeout 8000",
     "test": "npm run tst  && npm run lint",
@@ -21,6 +26,7 @@
   },
   "dependencies": {
     "graphql": "^14.3.0",
+    "prettier": "^1.17.1",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
@@ -32,6 +38,7 @@
     "eslint-config-prettier": "^4.2.0",
     "mocha": "^6.1.4",
     "nodemon": "^1.19.0",
+    "ts-node": "^8.2.0",
     "typescript": "^3.4.5"
   }
 }
