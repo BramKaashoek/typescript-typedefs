@@ -1,0 +1,5 @@
+*
+!dist/**/*
+dist/**/spec.*
+!package.json
+!README.md
