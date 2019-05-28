@@ -1,6 +1,6 @@
 {
   "name": "typescript-typedefs",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "license": "MIT",
   "author": "Bram Kaashoek",
   "repository": {
@@ -17,12 +17,17 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "npm run format && npm run test && tsc",
+    "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "eslint --ext .ts src/",
     "tst": "mocha --require ts-node/register --recursive 'src/**/*.spec.ts' --timeout 8000",
     "test": "npm run tst  && npm run lint",
-    "test:watch": "nodemon -e ts -w ./src --exec npm run tst"
+    "test:watch": "nodemon -e ts -w ./src --exec npm run tst",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {
     "graphql": "^14.3.0",
