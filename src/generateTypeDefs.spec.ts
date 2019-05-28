@@ -1,15 +1,15 @@
 import { Int, Float, ID } from './types';
-import { Type, InputType, Field, types, fields, inputTypes } from './decorators';
+import { Type, Input, Field, types, fields, inputs } from './decorators';
 import { expect } from 'chai';
 import { generateTypeDefs } from './generateTypeDefs';
 
 const removeWhiteSpace = (string: string): string => string.replace(/\s+/g, ' ');
 
-describe('Type and InputType', (): void => {
+describe('Type and Input', (): void => {
   beforeEach(
     (): void => {
       types.length = 0;
-      inputTypes.length = 0;
+      inputs.length = 0;
       fields.length = 0;
     },
   );
@@ -29,10 +29,10 @@ describe('Type and InputType', (): void => {
     expect(error.message).to.equal('Class TestClass must contain at least 1 @Field');
   });
 
-  it('InputType is expected to have atleast 1 field', (): void => {
+  it('Input is expected to have atleast 1 field', (): void => {
     let error: any = {};
 
-    @InputType()
+    @Input()
     class TestClass {}
 
     try {
@@ -50,7 +50,7 @@ describe('Strings and bools', (): void => {
   beforeEach(
     (): void => {
       types.length = 0;
-      inputTypes.length = 0;
+      inputs.length = 0;
       fields.length = 0;
     },
   );
@@ -90,7 +90,7 @@ describe('Floats and ints', (): void => {
   beforeEach(
     (): void => {
       types.length = 0;
-      inputTypes.length = 0;
+      inputs.length = 0;
       fields.length = 0;
     },
   );
@@ -136,7 +136,7 @@ describe('Nested Types', (): void => {
   beforeEach(
     (): void => {
       types.length = 0;
-      inputTypes.length = 0;
+      inputs.length = 0;
       fields.length = 0;
     },
   );
@@ -167,7 +167,7 @@ describe('IDs', (): void => {
   beforeEach(
     (): void => {
       types.length = 0;
-      inputTypes.length = 0;
+      inputs.length = 0;
       fields.length = 0;
     },
   );
@@ -191,7 +191,7 @@ describe('Not nullable values', (): void => {
   beforeEach(
     (): void => {
       types.length = 0;
-      inputTypes.length = 0;
+      inputs.length = 0;
       fields.length = 0;
     },
   );
@@ -215,23 +215,23 @@ describe('Not nullable values', (): void => {
   });
 });
 
-describe('InputType', (): void => {
+describe('Input', (): void => {
   beforeEach(
     (): void => {
       types.length = 0;
-      inputTypes.length = 0;
+      inputs.length = 0;
       fields.length = 0;
     },
   );
 
-  it('can handle inputTypes with all fields', (): void => {
-    @InputType()
+  it('can handle Inputs with all fields', (): void => {
+    @Input()
     class Course {
       @Field()
       name: string;
     }
 
-    @InputType()
+    @Input()
     class TestClass {
       @Field(ID)
       id: string;

@@ -1,3 +1,3 @@
 export { Int, Float, ID } from './types';
-export { Type, InputType, Field } from './decorators';
+export { Type, Input as InputType, Field } from './decorators';
 export { generateTypeDefs } from './generateTypeDefs';

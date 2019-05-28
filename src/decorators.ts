@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
 export const types: IType[] = [];
-export const inputTypes: IType[] = [];
+export const inputs: IType[] = [];
 export const fields: IField[] = [];
 
 export interface IType {
@@ -28,10 +28,10 @@ export const Type = (): ClassDecorator => (target: Function): void => {
   types.push({ target, fields: [] });
 };
 
-export const InputType = (): ClassDecorator => (target: Function): void => {
-  if (inputTypes.some((e): boolean => e.target.name === target.name))
-    throw new Error(`Duplicate @InputType ${target.name}`);
-  inputTypes.push({ target, fields: [] });
+export const Input = (): ClassDecorator => (target: Function): void => {
+  if (inputs.some((e): boolean => e.target.name === target.name))
+    throw new Error(`Duplicate @Input ${target.name}`);
+  inputs.push({ target, fields: [] });
 };
 
 export const Field = (args?: Function | IFieldArgs): PropertyDecorator => (

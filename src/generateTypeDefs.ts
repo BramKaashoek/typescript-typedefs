@@ -8,7 +8,7 @@ import {
   GraphQLScalarType,
 } from 'graphql';
 import 'reflect-metadata';
-import { types, fields, IType, IField, inputTypes } from './decorators';
+import { types, fields, IType, IField, inputs } from './decorators';
 
 export const generateTypeDefs = (klasses): string => {
   // all types
@@ -16,7 +16,7 @@ export const generateTypeDefs = (klasses): string => {
   const typesAsString = enrichedTypes.map((type): string => generateTypeString(type)).join('\n\n');
 
   // all inputTypes
-  const enrichedInputTypes = enrichTypes(klasses, inputTypes, fields);
+  const enrichedInputTypes = enrichTypes(klasses, inputs, fields);
   const inputTypesAsString = enrichedInputTypes
     .map((inputType): string => generateTypeString(inputType, true))
     .join('\n\n');
