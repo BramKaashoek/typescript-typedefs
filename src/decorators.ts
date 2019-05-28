@@ -14,12 +14,12 @@ export interface IField {
   propertyKey: string;
   type: string;
   passedType: Function;
-  nullable: boolean;
+  notNullable: boolean;
 }
 
 interface IFieldArgs {
   type?: Function;
-  nullable?: boolean;
+  notNullable?: boolean;
 }
 
 export const Type = (): ClassDecorator => (target: Function): void => {
@@ -38,13 +38,13 @@ export const Field = (args?: Function | IFieldArgs): PropertyDecorator => (
   klass,
   propertyKey,
 ): void => {
-  let nullable = false;
+  let notNullable = false;
   let passedType = undefined;
 
   if (typeof args === 'function' || typeof args === 'undefined') {
     passedType = args;
   } else {
-    if (args.nullable) nullable = args.nullable;
+    if (args.notNullable) notNullable = args.notNullable;
     passedType = args.type;
   }
 
@@ -53,6 +53,6 @@ export const Field = (args?: Function | IFieldArgs): PropertyDecorator => (
     propertyKey: String(propertyKey),
     type: undefined,
     passedType,
-    nullable: nullable,
+    notNullable: notNullable,
   });
 };

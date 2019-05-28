@@ -26,7 +26,7 @@ import {Type, Field, ID, Int, generateTypeDefs} from 'typescript-typedefs'
         @Field(String)
         friendNames: string[]
 
-        @Field(Int)
+        @Field({type: Int, notNullable: true})
         room: number
 
         @Field()
@@ -50,7 +50,7 @@ type Student {
   id: ID
   name: String
   friendNames: [String]
-  room: Int
+  room: Int!
   gpa: Float
   courses: [Course]
 }
