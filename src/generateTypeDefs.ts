@@ -51,6 +51,10 @@ const enrichTypes = (klasses, types, fields): IType[] => {
               field.target.prototype,
               field.propertyKey,
             );
+            if (!getType)
+              throw new Error(
+                `Error: no type found for ${field.propertyKey} on ${obj.target.name}`,
+              );
             field.type = translateToGraphqlType(
               getType,
               field.passedType,
