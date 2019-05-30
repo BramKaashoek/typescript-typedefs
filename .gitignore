@@ -6,3 +6,4 @@ coverage/
 
 yarn.lock
 package-json.lock
+yarn-error.log

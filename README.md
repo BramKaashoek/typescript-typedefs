@@ -130,5 +130,6 @@ Interfaces are not available at runtime, classes are.
 
 ## Todo
 
+- Add documentation to types/inputs
 - Add nullables array elements: `Field({nullable: elementsAndArray})`
 - Add syntax for explicit arrays: `Field([String])`
