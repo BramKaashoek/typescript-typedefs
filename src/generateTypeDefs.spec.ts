@@ -14,7 +14,7 @@ describe('Type and Input', (): void => {
     },
   );
 
-  it('Type is expected to have atleast 1 field', (): void => {
+  it('Type is expected to have at least 1 field', (): void => {
     let error: any = {};
 
     @Type()
@@ -29,7 +29,7 @@ describe('Type and Input', (): void => {
     expect(error.message).to.equal('Class TestClass must contain at least 1 @Field');
   });
 
-  it('Input is expected to have atleast 1 field', (): void => {
+  it('Input is expected to have at least 1 field', (): void => {
     let error: any = {};
 
     @Input()
@@ -55,7 +55,7 @@ describe('Strings and bools', (): void => {
     },
   );
 
-  it('aA type can have a string or boolean field', (): void => {
+  it('can have a string or boolean field', (): void => {
     @Type()
     class TestClass {
       @Field()

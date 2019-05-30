@@ -11,17 +11,17 @@ import 'reflect-metadata';
 import { types, fields, IType, IField, inputs } from './decorators';
 
 export const generateTypeDefs = (klasses): string => {
-  // all types
+  // types
   const enrichedTypes = enrichTypes(klasses, types, fields);
   const typesAsString = enrichedTypes.map((type): string => generateTypeString(type)).join('\n\n');
 
-  // all inputTypes
+  // inputs
   const enrichedInputTypes = enrichTypes(klasses, inputs, fields);
   const inputTypesAsString = enrichedInputTypes
     .map((inputType): string => generateTypeString(inputType, true))
     .join('\n\n');
 
-  // return based on presence of types/inputTypes
+  // return based on presence of types/inputs
   if (!enrichedTypes.length) return inputTypesAsString;
   if (!enrichedInputTypes.length) return typesAsString;
   return typesAsString + '\n\n' + inputTypesAsString;
@@ -43,17 +43,17 @@ const enrichTypes = (klasses, types, fields): IType[] => {
   const typesWithFields = selectedTypes.map(
     (obj): IType => {
       obj.fields = fields
-        .filter((field): boolean => field.target.name === obj.target.name)
+        .filter((field): boolean => field.target.prototype === obj.target.prototype)
         .map(
           (field): IField => {
             const getType = Reflect.getMetadata(
               'design:type',
-              field.target.prototype,
+              obj.target.prototype,
               field.propertyKey,
             );
             if (!getType)
               throw new Error(
-                `Error: no type found for ${field.propertyKey} on ${obj.target.name}`,
+                `Error: no type found for field ${field.propertyKey} on class ${obj.target.name}`,
               );
             field.type = translateToGraphqlType(
               getType,
@@ -73,7 +73,7 @@ const enrichTypes = (klasses, types, fields): IType[] => {
   typesWithFields.map(
     (type): void => {
       if (!type.fields.length)
-        throw new Error(`Class ${type.target.name} must contain at least 1 @Field`);
+        throw new Error(`Error: Class ${type.target.name} must contain at least 1 @Field`);
     },
   );
 
@@ -91,7 +91,7 @@ const translateToGraphqlType = (
   if (getType.prototype === Array.prototype) {
     if (!passedType)
       throw new Error(
-        `Array ${fieldName} on ${className} has no type. Arrays must always be provided with a type.`,
+        `Error: Array ${fieldName} on ${className} has no type. Arrays must always be provided with a type.`,
       );
 
     const type = getGraphqlTypeFromType(passedType, types);
@@ -105,7 +105,7 @@ const translateToGraphqlType = (
   const type = getGraphqlTypeFromType(getType, types, passedType);
   if (type) return type;
   throw new Error(
-    `unknown type for ${fieldName}: ${
+    `Error: unknown type for ${fieldName}: ${
       getType.name
     } on ${className}. If it's a class, did you forget to add it to generateTypeDefs()?`,
   );
@@ -123,7 +123,7 @@ const getGraphqlTypeFromType = (getType, types, passedType?): GraphQLScalarType 
       if (!passedType) return GraphQLFloat;
       if (passedType.prototype === Int.prototype) return GraphQLInt;
       if (passedType.prototype === Float.prototype) return GraphQLFloat;
-      throw new Error('Incorrect field type for number, must be Int or Float');
+      throw new Error('Error: Incorrect field type for number, must be Int or Float');
     case Float.prototype:
       return GraphQLFloat;
     case Int.prototype:

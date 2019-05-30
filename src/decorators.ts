@@ -24,13 +24,13 @@ interface IFieldArgs {
 
 export const Type = (): ClassDecorator => (target: Function): void => {
   if (types.some((e): boolean => e.target.name === target.name))
-    throw new Error(`Duplicate @Type ${target.name}`);
+    throw new Error(`Error: Duplicate @Type ${target.name}`);
   types.push({ target, fields: [] });
 };
 
 export const Input = (): ClassDecorator => (target: Function): void => {
   if (inputs.some((e): boolean => e.target.name === target.name))
-    throw new Error(`Duplicate @Input ${target.name}`);
+    throw new Error(`Error: Duplicate @Input ${target.name}`);
   inputs.push({ target, fields: [] });
 };
 
