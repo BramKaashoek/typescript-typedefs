@@ -26,7 +26,7 @@ describe('Type and Input', (): void => {
       error = err;
     }
     expect(error).to.exist;
-    expect(error.message).to.equal('Class TestClass must contain at least 1 @Field');
+    expect(error.message).to.equal('Error: Class TestClass must contain at least 1 @Field');
   });
 
   it('Input is expected to have at least 1 field', (): void => {
@@ -42,7 +42,7 @@ describe('Type and Input', (): void => {
     }
 
     expect(error).to.exist;
-    expect(error.message).to.equal('Class TestClass must contain at least 1 @Field');
+    expect(error.message).to.equal('Error: Class TestClass must contain at least 1 @Field');
   });
 });
 
