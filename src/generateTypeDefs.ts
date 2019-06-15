@@ -8,29 +8,41 @@ import {
   GraphQLScalarType,
 } from 'graphql';
 import 'reflect-metadata';
-import { types, fields, IType, IField, inputs } from './decorators';
+import { types, fields, IType, IField, inputs, interfaces } from './decorators';
 
 export const generateTypeDefs = (klasses): string => {
+  // interfaces
+  const enrichedInterfaces = enrichTypes(klasses, interfaces, fields);
+  const interfacesAsString = enrichedInterfaces
+    .map((interfaceType): string => generateTypeString(interfaceType, 'interface'))
+    .join('\n\n');
+
   // types
   const enrichedTypes = enrichTypes(klasses, types, fields);
-  const typesAsString = enrichedTypes.map((type): string => generateTypeString(type)).join('\n\n');
+  const typesAsString = enrichedTypes
+    .map((type): string => generateTypeString(type, 'type'))
+    .join('\n\n');
 
   // inputs
   const enrichedInputTypes = enrichTypes(klasses, inputs, fields);
   const inputTypesAsString = enrichedInputTypes
-    .map((inputType): string => generateTypeString(inputType, true))
+    .map((inputType): string => generateTypeString(inputType, 'input'))
     .join('\n\n');
 
   // return based on presence of types/inputs
-  if (!enrichedTypes.length) return inputTypesAsString;
-  if (!enrichedInputTypes.length) return typesAsString;
-  return typesAsString + '\n\n' + inputTypesAsString;
+  let typeDefs = '';
+  if (enrichedInterfaces.length) typeDefs += interfacesAsString + '\n\n';
+  if (enrichedTypes.length) typeDefs += typesAsString + '\n\n';
+  if (enrichedInputTypes.length) typeDefs += inputTypesAsString + '\n\n';
+
+  typeDefs = typeDefs.slice(0, -2);
+  return typeDefs;
 };
 
-const generateTypeString = (type, isInputType = false): string => {
-  const typeName = isInputType ? 'input' : 'type';
-
-  return `${typeName} ${type.target.name} {\n${type.fields
+const generateTypeString = (type, typeName): string => {
+  return `${typeName} ${type.target.name} ${
+    type.implements ? 'implements ' + type.implements.name + ' ' : ''
+  }{\n${type.fields
     .map((field): string => `  ${field.propertyKey}: ${field.type}${field.notNullable ? '!' : ''}`)
     .join('\n')}\n}`;
 };

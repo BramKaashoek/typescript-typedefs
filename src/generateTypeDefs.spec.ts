@@ -1,5 +1,5 @@
 import { Int, Float, ID } from './types';
-import { Type, Input, Field, types, fields, inputs } from './decorators';
+import { Type, Input, Field, types, fields, inputs, Interface, interfaces } from './decorators';
 import { expect } from 'chai';
 import { generateTypeDefs } from './generateTypeDefs';
 
@@ -11,6 +11,7 @@ describe('Type and Input', (): void => {
       types.length = 0;
       inputs.length = 0;
       fields.length = 0;
+      interfaces.length = 0;
     },
   );
 
@@ -52,6 +53,7 @@ describe('Strings and bools', (): void => {
       types.length = 0;
       inputs.length = 0;
       fields.length = 0;
+      interfaces.length = 0;
     },
   );
 
@@ -92,6 +94,7 @@ describe('Floats and ints', (): void => {
       types.length = 0;
       inputs.length = 0;
       fields.length = 0;
+      interfaces.length = 0;
     },
   );
 
@@ -138,6 +141,7 @@ describe('Nested Types', (): void => {
       types.length = 0;
       inputs.length = 0;
       fields.length = 0;
+      interfaces.length = 0;
     },
   );
 
@@ -169,6 +173,7 @@ describe('IDs', (): void => {
       types.length = 0;
       inputs.length = 0;
       fields.length = 0;
+      interfaces.length = 0;
     },
   );
 
@@ -193,6 +198,7 @@ describe('Not nullable values', (): void => {
       types.length = 0;
       inputs.length = 0;
       fields.length = 0;
+      interfaces.length = 0;
     },
   );
 
@@ -221,6 +227,7 @@ describe('Input', (): void => {
       types.length = 0;
       inputs.length = 0;
       fields.length = 0;
+      interfaces.length = 0;
     },
   );
 
@@ -250,6 +257,83 @@ describe('Input', (): void => {
     }
     expect(removeWhiteSpace(generateTypeDefs([TestClass, Course]))).to.equal(
       'input Course { name: String } input TestClass { id: ID name: String gpa: Float classRank: Int classes: [Course] }',
+    );
+  });
+});
+
+describe('Interface', (): void => {
+  beforeEach(
+    (): void => {
+      types.length = 0;
+      inputs.length = 0;
+      fields.length = 0;
+      interfaces.length = 0;
+    },
+  );
+
+  it('has an interface decorator', (): void => {
+    @Interface()
+    class TestClass {
+      @Field()
+      name: string;
+    }
+
+    expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
+      'interface TestClass { name: String }',
+    );
+  });
+
+  it('can implement interfaces through  "extend"', (): void => {
+    @Interface()
+    class Book {
+      @Field()
+      title: string;
+
+      @Field()
+      author: string;
+    }
+
+    @Type()
+    class CourseBook extends Book {
+      @Field()
+      title: string;
+
+      @Field()
+      author: string;
+
+      @Field(Int)
+      course: string;
+    }
+
+    expect(removeWhiteSpace(generateTypeDefs([Book, CourseBook]))).to.equal(
+      'interface Book { title: String author: String } type CourseBook implements Book { title: String author: String course: String }',
+    );
+  });
+
+  it('can implement interfaces through explicit "implements" option', (): void => {
+    @Interface()
+    class Book {
+      @Field()
+      title: string;
+
+      @Field()
+      author: string;
+    }
+
+    @Type({ implements: Book })
+    class CourseBook implements Book {
+      @Field()
+      title: string;
+
+      @Field()
+      author: string;
+
+      @Field(Int)
+      course: string;
+    }
+
+    expect(removeWhiteSpace(generateTypeDefs([Book, CourseBook]))).to.equal(
+      'interface Book { title: String author: String } type CourseBook implements Book { title: String author: String course: String }',
     );
   });
 });

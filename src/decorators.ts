@@ -2,11 +2,13 @@ import 'reflect-metadata';
 
 export const types: IType[] = [];
 export const inputs: IType[] = [];
+export const interfaces: IType[] = [];
 export const fields: IField[] = [];
 
 export interface IType {
-  target: any;
+  target: Function;
   fields: any[];
+  implements?: Function;
 }
 
 export interface IField {
@@ -22,10 +24,18 @@ interface IFieldArgs {
   notNullable?: boolean;
 }
 
-export const Type = (): ClassDecorator => (target: Function): void => {
+interface ITypeArgs {
+  implements: Function;
+}
+
+export const Type = (args?: ITypeArgs): ClassDecorator => (target: Function): void => {
   if (types.some((e): boolean => e.target.name === target.name))
     throw new Error(`Error: Duplicate @Type ${target.name}`);
-  types.push({ target, fields: [] });
+
+  const extendsClass = Reflect.getMetadata('extendedClass', target);
+  const implementsClass = args ? args.implements : undefined;
+
+  types.push({ target, fields: [], implements: implementsClass || extendsClass });
 };
 
 export const Input = (): ClassDecorator => (target: Function): void => {
@@ -55,4 +65,11 @@ export const Field = (args?: Function | IFieldArgs): PropertyDecorator => (
     passedType,
     notNullable: notNullable,
   });
+};
+
+export const Interface = (): ClassDecorator => (target: Function): void => {
+  if (interfaces.some((e): boolean => e.target.name === target.name))
+    throw new Error(`Error: Duplicate @Interface ${target.name}`);
+  interfaces.push({ target, fields: [] });
+  Reflect.defineMetadata('extendedClass', target, target);
 };

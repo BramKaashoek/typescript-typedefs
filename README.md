@@ -8,7 +8,7 @@ With this package you can simply define your model as a class, use the provided 
 
 ### Install the packages
 
-```
+```javascript
 npm i typescript-typedefs
 ```
 
@@ -16,7 +16,7 @@ npm i typescript-typedefs
 
 Since we use decorators, [tsconfig must be configured](https://www.typescriptlang.org/docs/handbook/decorators.html) to work with them.
 
-```
+```javascript
 {
   "compilerOptions: {
     ...
@@ -30,9 +30,10 @@ Since we use decorators, [tsconfig must be configured](https://www.typescriptlan
 
 This package exports
 
-- Type - used as @Type() to decorate a class
+- Type - used as @Type() to decorate a class or @Type({implements: OtherClass})
 - Input - used as @Input() to decorate a class
 - Field - used as @Field(), @Field(String) or @Field({type: Int, notNullable: true}) to decorate a class property
+- Interface - used as @Interface() to decorate a class which should result in an interface in the typeDefs
 - Int - used in an @Field() decorator
 - Float - used in an @Field() decorator
 - ID - used in an @Field() decorator
@@ -40,42 +41,73 @@ This package exports
 
 ## Example
 
-```
-import {Type, Field, ID, Int, generateTypeDefs} from 'typescript-typedefs'
+```javascript
+import { Type, Field, ID, Int, generateTypeDefs } from 'typescript-typedefs';
 
-    @Type()
-    class Course {
-      @Field()
-      name: string
-    }
+@Type()
+class Course {
+  @Field()
+  name: string;
+}
 
-    @Type()
-    class Student {
-        @Field(ID)
-        id: string
+@Type()
+class Student {
+  @Field(ID)
+  id: string;
 
-        @Field()
-        name: string
+  @Field()
+  name: string;
 
-        @Field(String)
-        friendNames: string[]
+  @Field(String)
+  friendNames: string[];
 
-        @Field({type: Int, notNullable: true})
-        room: number
+  @Field({ type: Int, notNullable: true })
+  room: number;
 
-        @Field()
-        gpa: number
+  @Field()
+  gpa: number;
 
-        @Field(Course)
-        courses: Course[]
-    }
+  @Field(Course)
+  courses: Course[];
+}
 
-  const generatedTypeDefs = generateTypeDefs([Course, Student])
+@Interface()
+class Book {
+  @Field()
+  author: string;
+}
+
+// option 1 for implementing
+@Type()
+class CourseBook extends Book {
+  @Field()
+  author: string;
+
+  @Field()
+  course: string;
+}
+
+// option 2 for implementing
+@Type({ implements: Book })
+class ColoringBook implements Book {
+  @Field()
+  author: string;
+
+  @Field()
+  designer: string;
+}
+
+const generatedTypeDefs = generateTypeDefs([Course, Student, Book, CourseBook, ColoringBook]);
 ```
 
 results in a string:
 
-```
+```javascript
+`
+interface Book {
+  author: String
+}
+
 type Course {
  name: String
 }
@@ -88,17 +120,28 @@ type Student {
   gpa: Float
   courses: [Course]
 }
+
+type CourseBook implements Book {
+  author: String
+  course: String
+}
+
+type ColoringBook implements Book  {
+  author: String
+  designer: String
+}
+`;
 ```
 
 which can then be used in `makeExecutableSchema()` from [Apollo server.](https://www.npmjs.com/package/apollo-server)
 
 ## FAQ
 
-### Why won't circular references work?
+### Why won't circular references work
 
 This packages makes use of [reflect-metadata](https://www.npmjs.com/package/reflect-metadata) which has difficulties with circular references. To work around this, you can implement something like this:
 
-```
+```javascript
 @Type()
 class Course {
   @Field(Student)
@@ -124,12 +167,13 @@ const schema = makeExecutableSchema({
 
 ```
 
-### Why classes and not interfaces?
+### Why classes and not interfaces
 
 Interfaces are not available at runtime, classes are.
 
 ## Todo
 
 - Add documentation to types/inputs
+- Add enums
 - Add nullables array elements: `Field({nullable: elementsAndArray})`
 - Add syntax for explicit arrays: `Field([String])`
