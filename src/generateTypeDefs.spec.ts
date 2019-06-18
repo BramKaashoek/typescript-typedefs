@@ -68,7 +68,7 @@ describe('Strings and bools', (): void => {
     }
 
     expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
-      'type TestClass { name: String isTrue: Boolean }',
+      'type TestClass { name: String! isTrue: Boolean! }',
     );
   });
 
@@ -83,7 +83,7 @@ describe('Strings and bools', (): void => {
     }
 
     expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
-      'type TestClass { names: [String] areTrue: [Boolean] }',
+      'type TestClass { names: [String!]! areTrue: [Boolean!]! }',
     );
   });
 });
@@ -112,7 +112,7 @@ describe('Floats and ints', (): void => {
     }
 
     expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
-      'type TestClass { someFloat: Float someInt: Int otherFloat: Float }',
+      'type TestClass { someFloat: Float! someInt: Int! otherFloat: Float! }',
     );
   });
 
@@ -130,7 +130,7 @@ describe('Floats and ints', (): void => {
     }
 
     expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
-      'type TestClass { floatArray: [Float] otherFloatArray: [Float] intArray: [Int] }',
+      'type TestClass { floatArray: [Float!]! otherFloatArray: [Float!]! intArray: [Int!]! }',
     );
   });
 });
@@ -162,7 +162,7 @@ describe('Nested Types', (): void => {
     }
 
     expect(removeWhiteSpace(generateTypeDefs([Parent, Child]))).to.equal(
-      'type Child { name: String } type Parent { child: Child children: [Child] }',
+      'type Child { name: String! } type Parent { child: Child! children: [Child!]! }',
     );
   });
 });
@@ -187,12 +187,12 @@ describe('IDs', (): void => {
       ids: string[];
     }
     expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
-      'type TestClass { id: ID ids: [ID] }',
+      'type TestClass { id: ID! ids: [ID!]! }',
     );
   });
 });
 
-describe('Not nullable values', (): void => {
+describe('Nullable values', (): void => {
   beforeEach(
     (): void => {
       types.length = 0;
@@ -208,16 +208,16 @@ describe('Not nullable values', (): void => {
       @Field({ type: ID })
       id: string;
     }
-    expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal('type TestClass { id: ID }');
+    expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal('type TestClass { id: ID! }');
   });
 
-  it('can handle notNullable fields', (): void => {
+  it('can handle nullable fields', (): void => {
     @Type()
     class TestClass {
-      @Field({ type: ID, notNullable: true })
+      @Field({ type: ID, nullable: true })
       id?: string;
     }
-    expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal('type TestClass { id: ID! }');
+    expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal('type TestClass { id: ID }');
   });
 });
 
@@ -256,7 +256,7 @@ describe('Input', (): void => {
       classes: Course[];
     }
     expect(removeWhiteSpace(generateTypeDefs([TestClass, Course]))).to.equal(
-      'input Course { name: String } input TestClass { id: ID name: String gpa: Float classRank: Int classes: [Course] }',
+      'input Course { name: String! } input TestClass { id: ID! name: String! gpa: Float! classRank: Int! classes: [Course!]! }',
     );
   });
 });
@@ -279,7 +279,7 @@ describe('Interface', (): void => {
     }
 
     expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
-      'interface TestClass { name: String }',
+      'interface TestClass { name: String! }',
     );
   });
 
@@ -306,7 +306,7 @@ describe('Interface', (): void => {
     }
 
     expect(removeWhiteSpace(generateTypeDefs([Book, CourseBook]))).to.equal(
-      'interface Book { title: String author: String } type CourseBook implements Book { title: String author: String course: String }',
+      'interface Book { title: String! author: String! } type CourseBook implements Book { title: String! author: String! course: String! }',
     );
   });
 
@@ -333,7 +333,7 @@ describe('Interface', (): void => {
     }
 
     expect(removeWhiteSpace(generateTypeDefs([Book, CourseBook]))).to.equal(
-      'interface Book { title: String author: String } type CourseBook implements Book { title: String author: String course: String }',
+      'interface Book { title: String! author: String! } type CourseBook implements Book { title: String! author: String! course: String! }',
     );
   });
 });

@@ -18,8 +18,7 @@ Since we use decorators, [tsconfig must be configured](https://www.typescriptlan
 
 ```javascript
 {
-  "compilerOptions: {
-    ...
+  "compilerOptions": {
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true
   }
@@ -32,7 +31,7 @@ This package exports
 
 - Type - used as @Type() to decorate a class or @Type({implements: OtherClass})
 - Input - used as @Input() to decorate a class
-- Field - used as @Field(), @Field(String) or @Field({type: Int, notNullable: true}) to decorate a class property
+- Field - used as @Field(), @Field(String) or @Field({type: Int, nullable: true}) to decorate a class property
 - Interface - used as @Interface() to decorate a class which should result in an interface in the typeDefs
 - Int - used in an @Field() decorator
 - Float - used in an @Field() decorator
@@ -61,7 +60,7 @@ class Student {
   @Field(String)
   friendNames: string[];
 
-  @Field({ type: Int, notNullable: true })
+  @Field({ type: Int, nullable: true })
   room: number;
 
   @Field()
@@ -105,30 +104,30 @@ results in a string:
 ```javascript
 `
 interface Book {
-  author: String
+  author: String!
 }
 
 type Course {
- name: String
+ name: String!
 }
 
 type Student {
-  id: ID
-  name: String
-  friendNames: [String]
-  room: Int!
-  gpa: Float
-  courses: [Course]
+  id: ID!
+  name: String!
+  friendNames: [String!]!
+  room: Int
+  gpa: Float!
+  courses: [Course!]!
 }
 
 type CourseBook implements Book {
-  author: String
-  course: String
+  author: String!
+  course: String!
 }
 
 type ColoringBook implements Book  {
-  author: String
-  designer: String
+  author: String!
+  designer: String!
 }
 `;
 ```
@@ -157,7 +156,7 @@ const generatedTypeDefs = generateTypeDefs([Course, Student])
 
 const extendTypeDefs = gql`
   extend type Student {
-    courses: [Course]
+    courses: [Course!]!
   }
 `
 const schema = makeExecutableSchema({
@@ -175,5 +174,6 @@ Interfaces are not available at runtime, classes are.
 
 - Add documentation to types/inputs
 - Add enums
+- Add nullable array elements
 - Add nullables array elements: `Field({nullable: elementsAndArray})`
 - Add syntax for explicit arrays: `Field([String])`

@@ -43,7 +43,7 @@ const generateTypeString = (type, typeName): string => {
   return `${typeName} ${type.target.name} ${
     type.implements ? 'implements ' + type.implements.name + ' ' : ''
   }{\n${type.fields
-    .map((field): string => `  ${field.propertyKey}: ${field.type}${field.notNullable ? '!' : ''}`)
+    .map((field): string => `  ${field.propertyKey}: ${field.type}${field.nullable ? '' : '!'}`)
     .join('\n')}\n}`;
 };
 
@@ -100,7 +100,7 @@ const translateToGraphqlType = (getType, passedType, fieldName, className): Grap
       );
 
     const type = getGraphqlTypeFromType(passedType);
-    return `[${type}]`;
+    return `[${type}!]`;
   }
 
   // non-array fields
