@@ -65,7 +65,9 @@ const enrichTypes = (klasses, types, fields): IType[] => {
             );
             if (!getType)
               throw new Error(
-                `Error: no type found for field ${field.propertyKey} on class ${obj.target.name}`,
+                `no type found for field ${field.propertyKey} on class ${
+                  obj.target.name
+                }. In case of circular dependency use @Field(forwardRef(() => Type)).`,
               );
             field.type = translateToGraphqlType(
               getType,
@@ -84,7 +86,7 @@ const enrichTypes = (klasses, types, fields): IType[] => {
   typesWithFields.map(
     (type): void => {
       if (!type.fields.length)
-        throw new Error(`Error: Class ${type.target.name} must contain at least 1 @Field`);
+        throw new Error(`Class ${type.target.name} must contain at least 1 @Field`);
     },
   );
 
@@ -96,7 +98,7 @@ const translateToGraphqlType = (getType, passedType, fieldName, className): Grap
   if (getType.prototype === Array.prototype) {
     if (!passedType)
       throw new Error(
-        `Error: Array ${fieldName} on ${className} has no type. Arrays must always be provided with a type.`,
+        `Array ${fieldName} on ${className} has no type. Arrays must always be provided with a type. In case of circular dependency, use @Field(forwardRef(() => Type)).`,
       );
 
     const type = getGraphqlTypeFromType(passedType);
@@ -108,6 +110,10 @@ const translateToGraphqlType = (getType, passedType, fieldName, className): Grap
 };
 
 const getGraphqlTypeFromType = (type, passedType = undefined): GraphQLScalarType => {
+  if (type.isForwardRef) {
+    return resolveForwardRef(type);
+  }
+
   switch (type.prototype) {
     case String.prototype:
       if (passedType && passedType.prototype === ID.prototype) return GraphQLID;
@@ -118,7 +124,7 @@ const getGraphqlTypeFromType = (type, passedType = undefined): GraphQLScalarType
       if (!passedType) return GraphQLFloat;
       if (passedType.prototype === Int.prototype) return GraphQLInt;
       if (passedType.prototype === Float.prototype) return GraphQLFloat;
-      throw new Error('Error: Incorrect field type for number, must be Int or Float');
+      throw new Error('Incorrect field type for number, must be Int or Float');
     case Float.prototype:
       return GraphQLFloat;
     case Int.prototype:
@@ -128,4 +134,14 @@ const getGraphqlTypeFromType = (type, passedType = undefined): GraphQLScalarType
     default:
       return type.name;
   }
+};
+
+export const forwardRef = (forwardRefFn): object => {
+  forwardRefFn.fn = forwardRefFn;
+  forwardRefFn.isForwardRef = true;
+  return forwardRefFn;
+};
+
+const resolveForwardRef = (type): any => {
+  return type().name;
 };

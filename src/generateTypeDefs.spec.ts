@@ -1,3 +1,4 @@
+import { Student, Book } from './specHelper';
 import { Int, Float, ID } from './types';
 import { Type, Input, Field, types, fields, inputs, Interface, interfaces } from './decorators';
 import { expect } from 'chai';
@@ -27,7 +28,7 @@ describe('Type and Input', (): void => {
       error = err;
     }
     expect(error).to.exist;
-    expect(error.message).to.equal('Error: Class TestClass must contain at least 1 @Field');
+    expect(error.message).to.equal('Class TestClass must contain at least 1 @Field');
   });
 
   it('Input is expected to have at least 1 field', (): void => {
@@ -43,7 +44,7 @@ describe('Type and Input', (): void => {
     }
 
     expect(error).to.exist;
-    expect(error.message).to.equal('Error: Class TestClass must contain at least 1 @Field');
+    expect(error.message).to.equal('Class TestClass must contain at least 1 @Field');
   });
 });
 
@@ -336,4 +337,38 @@ describe('Interface', (): void => {
       'interface Book { title: String! author: String! } type CourseBook implements Book { title: String! author: String! course: String! }',
     );
   });
+});
+
+@Type()
+export class Course {
+  @Field()
+  name: string;
+
+  @Field(Student)
+  students: Student[];
+}
+it('circular dependencies throw a meaningful error', (): void => {
+  let error;
+  try {
+    generateTypeDefs([Course, Student]);
+  } catch (err) {
+    error = err;
+  }
+  expect(error.message).to.contain('circular dependency');
+  expect(error.message).to.contain('forwardRef');
+});
+
+@Type()
+export class Reader {
+  @Field()
+  name: string;
+
+  @Field(Book)
+  books: Book[];
+}
+
+it('can handle circular dependencies by using forwardref', (): void => {
+  expect(removeWhiteSpace(generateTypeDefs([Reader, Book]))).to.equal(
+    'type Book { name: String! readers: [Reader!]! } type Reader { name: String! books: [Book!]! }',
+  );
 });

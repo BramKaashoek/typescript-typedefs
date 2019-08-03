@@ -136,21 +136,47 @@ which can then be used in `makeExecutableSchema()` from [Apollo server.](https:/
 
 ## FAQ
 
-### Why won't circular references work
+### How to deal with circular dependencies
 
-This packages makes use of [reflect-metadata](https://www.npmjs.com/package/reflect-metadata) which has difficulties with circular references. To work around this, you can implement something like this:
+This packages makes use of [reflect-metadata](https://www.npmjs.com/package/reflect-metadata) which has difficulties with circular references. To work around this, there are 2 options:
+
+#### use forwardRef
 
 ```javascript
+// ./course/courseTypeDefs
 @Type()
-class Course {
+export class Course {
+  @Field(forwardRef(() => Student))
+  students: Student[];
+}
+
+// ./student/studentTypeDefs
+@Type()
+class Student {
+  @Field(Course)
+  courses: Course[];
+}
+
+export const studentCourseTypeDefs = generateTypeDefs([Student, Course]);
+```
+
+#### manually write type definition
+
+```javascript
+// ./course/courseTypeDefs
+@Type()
+export class Course {
   @Field(Student)
   students: Student[]
 }
 
+// .student//studentTypeDefs
 @Type()
 class Student {
   courses: Course[]
 }
+
+// ./schema
 
 const generatedTypeDefs = generateTypeDefs([Course, Student])
 
@@ -177,3 +203,4 @@ Interfaces are not available at runtime, classes are.
 - Add nullable array elements
 - Add nullables array elements: `Field({nullable: elementsAndArray})`
 - Add syntax for explicit arrays: `Field([String])`
+- investigate usage of 'string | undefined' instead of {nullable: true}
