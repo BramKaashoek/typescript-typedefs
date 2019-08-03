@@ -137,11 +137,13 @@ const getGraphqlTypeFromType = (type, passedType = undefined): GraphQLScalarType
 };
 
 export const forwardRef = (forwardRefFn): object => {
-  forwardRefFn.fn = forwardRefFn;
   forwardRefFn.isForwardRef = true;
   return forwardRefFn;
 };
 
 const resolveForwardRef = (type): any => {
+  console.log(type);
+  console.log(type());
+  console.log(type().name);
   return type().name;
 };
