@@ -14,4 +14,7 @@ export class Book {
 
   @Field(forwardRef((): any => Reader))
   readers: Reader[];
+
+  @Field({ type: forwardRef((): any => Reader) })
+  moreReaders: Reader[];
 }

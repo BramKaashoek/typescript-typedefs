@@ -393,6 +393,6 @@ export class Reader {
 
 it('can handle circular dependencies by using forwardref', (): void => {
   expect(removeWhiteSpace(generateTypeDefs([Reader, Book]))).to.equal(
-    'type Book { name: String! readers: [Reader!]! } type Reader { name: String! books: [Book!]! }',
+    'type Book { name: String! readers: [Reader!]! moreReaders: [Reader!]! } type Reader { name: String! books: [Book!]! }',
   );
 });

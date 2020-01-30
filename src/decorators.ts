@@ -21,7 +21,7 @@ export interface IField {
 }
 
 interface IFieldArgs {
-  type?: Function;
+  type?: Function | object;
   nullable?: boolean;
   directives?: IDirective[];
 }
