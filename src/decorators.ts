@@ -17,11 +17,18 @@ export interface IField {
   type: string;
   passedType: Function;
   nullable: boolean;
+  directives: IDirective[];
 }
 
 interface IFieldArgs {
   type?: Function;
   nullable?: boolean;
+  directives?: IDirective[];
+}
+
+interface IDirective {
+  directive: string;
+  [key: string]: string;
 }
 
 interface ITypeArgs {
@@ -50,11 +57,13 @@ export const Field = (args?: Function | IFieldArgs): PropertyDecorator => (
 ): void => {
   let nullable = false;
   let passedType = undefined;
+  let directives = [];
 
   if (typeof args === 'function' || typeof args === 'undefined') {
     passedType = args;
   } else {
     if (args.nullable) nullable = args.nullable;
+    if (args.directives) directives = args.directives;
     passedType = args.type;
   }
 
@@ -64,6 +73,7 @@ export const Field = (args?: Function | IFieldArgs): PropertyDecorator => (
     type: undefined,
     passedType,
     nullable: nullable,
+    directives: directives,
   });
 };
 

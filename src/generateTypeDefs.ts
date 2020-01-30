@@ -43,7 +43,28 @@ const generateTypeString = (type, typeName): string => {
   return `${typeName} ${type.target.name} ${
     type.implements ? 'implements ' + type.implements.name + ' ' : ''
   }{\n${type.fields
-    .map((field): string => `  ${field.propertyKey}: ${field.type}${field.nullable ? '' : '!'}`)
+    .map((field): string => {
+      const nullable = `${field.nullable ? '' : '!'}`;
+
+      const directives = field.directives
+        .map((dir): string => {
+          const { directive, ...args } = dir;
+          const argsString = Object.keys(args).length
+            ? '(' +
+              Object.entries(args)
+                .map((a): string => {
+                  return `${a[0]}: "${a[1]}"`;
+                })
+                .join(', ') +
+              ')'
+            : '';
+
+          return `@${directive}${argsString}`;
+        })
+        .join(' ');
+
+      return `  ${field.propertyKey}: ${field.type}${nullable} ${directives}`;
+    })
     .join('\n')}\n}`;
 };
 
@@ -65,9 +86,7 @@ const enrichTypes = (klasses, types, fields): IType[] => {
             );
             if (!getType)
               throw new Error(
-                `no type found for field ${field.propertyKey} on class ${
-                  obj.target.name
-                }. In case of circular dependency use @Field(forwardRef(() => Type)).`,
+                `no type found for field ${field.propertyKey} on class ${obj.target.name}. In case of circular dependency use @Field(forwardRef(() => Type)).`,
               );
             field.type = translateToGraphqlType(
               getType,
@@ -83,17 +102,20 @@ const enrichTypes = (klasses, types, fields): IType[] => {
   );
 
   // check whether each type/inputType has at least 1 field
-  typesWithFields.map(
-    (type): void => {
-      if (!type.fields.length)
-        throw new Error(`Class ${type.target.name} must contain at least 1 @Field`);
-    },
-  );
+  typesWithFields.map((type): void => {
+    if (!type.fields.length)
+      throw new Error(`Class ${type.target.name} must contain at least 1 @Field`);
+  });
 
   return typesWithFields;
 };
 
-const translateToGraphqlType = (getType, passedType, fieldName, className): GraphQLScalarType => {
+const translateToGraphqlType = (
+  getType,
+  passedType,
+  fieldName,
+  className,
+): GraphQLScalarType | string => {
   // array fields
   if (getType.prototype === Array.prototype) {
     if (!passedType)
@@ -141,9 +163,6 @@ export const forwardRef = (forwardRefFn): object => {
   return forwardRefFn;
 };
 
-const resolveForwardRef = (type): any => {
-  console.log(type);
-  console.log(type());
-  console.log(type().name);
+const resolveForwardRef = (type): GraphQLScalarType => {
   return type().name;
 };

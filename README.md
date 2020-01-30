@@ -134,6 +134,54 @@ type ColoringBook implements Book  {
 
 which can then be used in `makeExecutableSchema()` from [Apollo server.](https://www.npmjs.com/package/apollo-server)
 
+## Directives
+
+Directives can be used, either with or without params. The field `directive` must always be set, as many params as desired can be added afterwards
+
+```javascript
+import { Type, Field, ID, Int, generateTypeDefs } from 'typescript-typedefs';
+import { merge } from 'lodash';
+
+@Type()
+class Course {
+  @Field()
+  name: string;
+
+  @Field({ directives: [{ directive: 'deprecated', reason: 'Use name instead' }] })
+  courseName: string;
+
+  @Field({ directives: [{ directive: 'deprecated' }] })
+  longCourseName: string;
+}
+
+const generatedTypeDefs = generateTypeDefs([Course]);
+
+const courseTypeDefs = `
+  extend type Query {
+    courses: [Course!]!
+  }
+
+  ${generatedTypeDefs}
+  `;
+
+const typeDefs = gql`
+  directive @deprecated(reason: String = "No longer supported") on FIELD_DEFINITION | ENUM_VALUE
+
+  type Query {
+    _empty: string
+  }
+
+  type Mutation {
+    _empty: String
+  }
+`;
+
+const schema = makeExecutableSchema({
+  typeDefs: [typeDefs, courseTypeDefs],
+  resolver: merge(courseResolver),
+});
+```
+
 ## FAQ
 
 ### How to deal with circular dependencies

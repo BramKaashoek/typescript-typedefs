@@ -7,14 +7,12 @@ import { generateTypeDefs } from './generateTypeDefs';
 const removeWhiteSpace = (string: string): string => string.replace(/\s+/g, ' ');
 
 describe('Type and Input', (): void => {
-  beforeEach(
-    (): void => {
-      types.length = 0;
-      inputs.length = 0;
-      fields.length = 0;
-      interfaces.length = 0;
-    },
-  );
+  beforeEach((): void => {
+    types.length = 0;
+    inputs.length = 0;
+    fields.length = 0;
+    interfaces.length = 0;
+  });
 
   it('Type is expected to have at least 1 field', (): void => {
     let error: any = {};
@@ -49,14 +47,12 @@ describe('Type and Input', (): void => {
 });
 
 describe('Strings and bools', (): void => {
-  beforeEach(
-    (): void => {
-      types.length = 0;
-      inputs.length = 0;
-      fields.length = 0;
-      interfaces.length = 0;
-    },
-  );
+  beforeEach((): void => {
+    types.length = 0;
+    inputs.length = 0;
+    fields.length = 0;
+    interfaces.length = 0;
+  });
 
   it('can have a string or boolean field', (): void => {
     @Type()
@@ -90,14 +86,12 @@ describe('Strings and bools', (): void => {
 });
 
 describe('Floats and ints', (): void => {
-  beforeEach(
-    (): void => {
-      types.length = 0;
-      inputs.length = 0;
-      fields.length = 0;
-      interfaces.length = 0;
-    },
-  );
+  beforeEach((): void => {
+    types.length = 0;
+    inputs.length = 0;
+    fields.length = 0;
+    interfaces.length = 0;
+  });
 
   it('can handle float and int fields', (): void => {
     @Type()
@@ -137,14 +131,12 @@ describe('Floats and ints', (): void => {
 });
 
 describe('Nested Types', (): void => {
-  beforeEach(
-    (): void => {
-      types.length = 0;
-      inputs.length = 0;
-      fields.length = 0;
-      interfaces.length = 0;
-    },
-  );
+  beforeEach((): void => {
+    types.length = 0;
+    inputs.length = 0;
+    fields.length = 0;
+    interfaces.length = 0;
+  });
 
   it('can handle nested types fields and arrays', (): void => {
     @Type()
@@ -169,14 +161,12 @@ describe('Nested Types', (): void => {
 });
 
 describe('IDs', (): void => {
-  beforeEach(
-    (): void => {
-      types.length = 0;
-      inputs.length = 0;
-      fields.length = 0;
-      interfaces.length = 0;
-    },
-  );
+  beforeEach((): void => {
+    types.length = 0;
+    inputs.length = 0;
+    fields.length = 0;
+    interfaces.length = 0;
+  });
 
   it('can handle IDs and ID arrays', (): void => {
     @Type()
@@ -194,14 +184,12 @@ describe('IDs', (): void => {
 });
 
 describe('Nullable values', (): void => {
-  beforeEach(
-    (): void => {
-      types.length = 0;
-      inputs.length = 0;
-      fields.length = 0;
-      interfaces.length = 0;
-    },
-  );
+  beforeEach((): void => {
+    types.length = 0;
+    inputs.length = 0;
+    fields.length = 0;
+    interfaces.length = 0;
+  });
 
   it('can handle object args', (): void => {
     @Type()
@@ -223,14 +211,12 @@ describe('Nullable values', (): void => {
 });
 
 describe('Input', (): void => {
-  beforeEach(
-    (): void => {
-      types.length = 0;
-      inputs.length = 0;
-      fields.length = 0;
-      interfaces.length = 0;
-    },
-  );
+  beforeEach((): void => {
+    types.length = 0;
+    inputs.length = 0;
+    fields.length = 0;
+    interfaces.length = 0;
+  });
 
   it('can handle Inputs with all fields', (): void => {
     @Input()
@@ -263,14 +249,12 @@ describe('Input', (): void => {
 });
 
 describe('Interface', (): void => {
-  beforeEach(
-    (): void => {
-      types.length = 0;
-      inputs.length = 0;
-      fields.length = 0;
-      interfaces.length = 0;
-    },
-  );
+  beforeEach((): void => {
+    types.length = 0;
+    inputs.length = 0;
+    fields.length = 0;
+    interfaces.length = 0;
+  });
 
   it('has an interface decorator', (): void => {
     @Interface()
@@ -335,6 +319,46 @@ describe('Interface', (): void => {
 
     expect(removeWhiteSpace(generateTypeDefs([Book, CourseBook]))).to.equal(
       'interface Book { title: String! author: String! } type CourseBook implements Book { title: String! author: String! course: String! }',
+    );
+  });
+});
+
+describe('Directives', (): void => {
+  beforeEach((): void => {
+    types.length = 0;
+    inputs.length = 0;
+    fields.length = 0;
+    interfaces.length = 0;
+  });
+  it('can handle a directive without params', async (): Promise<void> => {
+    @Type()
+    class TestClass {
+      @Field({ directives: [{ directive: 'deprecated' }] })
+      author: string;
+
+      @Field(String)
+      authors: string[];
+    }
+
+    expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
+      'type TestClass { author: String! @deprecated authors: [String!]! }',
+    );
+  });
+
+  it('can handle a directive with params', async (): Promise<void> => {
+    @Type()
+    class TestClass {
+      @Field({
+        directives: [{ directive: 'deprecated', reason: 'use the authors array instead' }],
+      })
+      author: string;
+
+      @Field(String)
+      authors: string[];
+    }
+
+    expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
+      'type TestClass { author: String! @deprecated(reason: "use the authors array instead") authors: [String!]! }',
     );
   });
 });
