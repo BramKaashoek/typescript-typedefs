@@ -136,7 +136,8 @@ which can then be used in `makeExecutableSchema()` from [Apollo server.](https:/
 
 ## Directives
 
-Directives can be used, either with or without params. The field `directive` must always be set, as many params as desired can be added afterwards
+Directives can be used, either with or without params. The field `directive` must always be set, as many params as desired can be added afterwards.
+Use something like [eslint-plugin-graphql](https://github.com/apollographql/eslint-plugin-graphql) to display your directives in your frontend.
 
 ```javascript
 import { Type, Field, ID, Int, generateTypeDefs } from 'typescript-typedefs';
