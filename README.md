@@ -142,6 +142,7 @@ Directives can be used, either with or without params. The field `directive` mus
 import { Type, Field, ID, Int, generateTypeDefs } from 'typescript-typedefs';
 import { merge } from 'lodash';
 import { SchemaDirectiveVisitor } from "graphql-tools";
+import { GraphQLField, GraphQLEnumValue } from 'graphql';
 
 @Type()
 class Course {
