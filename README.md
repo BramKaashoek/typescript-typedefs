@@ -141,6 +141,7 @@ Directives can be used, either with or without params. The field `directive` mus
 ```javascript
 import { Type, Field, ID, Int, generateTypeDefs } from 'typescript-typedefs';
 import { merge } from 'lodash';
+import { SchemaDirectiveVisitor } from "graphql-tools";
 
 @Type()
 class Course {
@@ -176,9 +177,23 @@ const typeDefs = gql`
   }
 `;
 
+class DeprecatedDirective extends SchemaDirectiveVisitor {
+  public visitFieldDefinition(field: GraphQLField<any, any>) {
+    field.isDeprecated = true;
+    field.deprecationReason = this.args.reason;
+  }
+  public visitEnumValue(value: GraphQLEnumValue) {
+    value.isDeprecated = true;
+    value.deprecationReason = this.args.reason;
+  }
+}
+
 const schema = makeExecutableSchema({
   typeDefs: [typeDefs, courseTypeDefs],
   resolver: merge(courseResolver),
+  schemaDirectives: {
+    deprecated: DeprecatedDirective,
+  },
 });
 ```
 
