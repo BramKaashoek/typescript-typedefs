@@ -361,6 +361,38 @@ describe('Directives', (): void => {
       'type TestClass { author: String! @deprecated(reason: "use the authors array instead") authors: [String!]! }',
     );
   });
+
+  it('can handle a directive without params on types', async (): Promise<void> => {
+    @Type({ directives: [{ directive: 'deprecated' }] })
+    class TestClass {
+      @Field()
+      author: string;
+
+      @Field(String)
+      authors: string[];
+    }
+
+    expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
+      'type TestClass @deprecated { author: String! authors: [String!]! }',
+    );
+  });
+
+  it('can handle a directive with params on types', async (): Promise<void> => {
+    @Type({
+      directives: [{ directive: 'deprecated', reason: 'use the authors array instead' }],
+    })
+    class TestClass {
+      @Field()
+      author: string;
+
+      @Field(String)
+      authors: string[];
+    }
+
+    expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
+      'type TestClass @deprecated(reason: "use the authors array instead") { author: String! authors: [String!]! }',
+    );
+  });
 });
 
 @Type()

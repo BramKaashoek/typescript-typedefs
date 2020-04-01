@@ -39,33 +39,37 @@ export const generateTypeDefs = (klasses): string => {
   return typeDefs;
 };
 
+const generateDirectives = (directives): string => directives
+  .map((dir): string => {
+    const { directive, ...args } = dir;
+    const argsString = Object.keys(args).length
+      ? '(' +
+      Object.entries(args)
+        .map((a): string => {
+          return `${a[0]}: "${a[1]}"`;
+        })
+        .join(', ') +
+      ')'
+      : '';
+
+    return `@${directive}${argsString}`;
+  })
+  .join(' ');
+
 const generateTypeString = (type, typeName): string => {
   return `${typeName} ${type.target.name} ${
     type.implements ? 'implements ' + type.implements.name + ' ' : ''
-  }{\n${type.fields
-    .map((field): string => {
-      const nullable = `${field.nullable ? '' : '!'}`;
+    } ${
+    type.directives ? generateDirectives(type.directives) + ' ' : ''
+    }{\n${type.fields
+      .map((field): string => {
+        const nullable = `${field.nullable ? '' : '!'}`;
 
-      const directives = field.directives
-        .map((dir): string => {
-          const { directive, ...args } = dir;
-          const argsString = Object.keys(args).length
-            ? '(' +
-              Object.entries(args)
-                .map((a): string => {
-                  return `${a[0]}: "${a[1]}"`;
-                })
-                .join(', ') +
-              ')'
-            : '';
+        const directives = generateDirectives(field.directives);
 
-          return `@${directive}${argsString}`;
-        })
-        .join(' ');
-
-      return `  ${field.propertyKey}: ${field.type}${nullable} ${directives}`;
-    })
-    .join('\n')}\n}`;
+        return `  ${field.propertyKey}: ${field.type}${nullable} ${directives}`;
+      })
+      .join('\n')}\n}`;
 };
 
 const enrichTypes = (klasses, types, fields): IType[] => {
