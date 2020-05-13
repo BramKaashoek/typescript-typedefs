@@ -9,6 +9,7 @@ export interface IType {
   target: Function;
   fields: any[];
   implements?: Function;
+  directives?: IDirective[];
 }
 
 export interface IField {
@@ -32,17 +33,24 @@ interface IDirective {
 }
 
 interface ITypeArgs {
-  implements: Function;
+  implements?: Function;
+  directives?: IDirective[];
 }
 
 export const Type = (args?: ITypeArgs): ClassDecorator => (target: Function): void => {
+  let directives = [];
+  let implementsClass = undefined;
+
   if (types.some((e): boolean => e.target.name === target.name))
     throw new Error(`Error: Duplicate @Type ${target.name}`);
 
   const extendsClass = Reflect.getMetadata('extendedClass', target);
-  const implementsClass = args ? args.implements : undefined;
+  if (typeof args !== 'undefined') {
+    if (args.implements) implementsClass = args.implements;
+    if (args.directives) directives = args.directives;
+  }
 
-  types.push({ target, fields: [], implements: implementsClass || extendsClass });
+  types.push({ target, fields: [], implements: implementsClass || extendsClass, directives });
 };
 
 export const Input = (): ClassDecorator => (target: Function): void => {
