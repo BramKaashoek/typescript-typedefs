@@ -1,6 +1,6 @@
 {
   "name": "typescript-typedefs",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "license": "MIT",
   "author": "Bram Kaashoek",
   "repository": {
@@ -27,7 +27,8 @@
     "prepublishOnly": "npm test && npm run lint",
     "preversion": "npm run lint",
     "version": "npm run format && git add -A src",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "publish": "npm publish dist"
   },
   "dependencies": {
     "graphql": "^14.3.0",

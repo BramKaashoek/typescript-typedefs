@@ -11,8 +11,8 @@
     "outDir": "dist",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "lib": ["ES2020", "DOM"]
+    "lib": ["ES2020", "dom"]
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts"]
+  "exclude": ["node_modules", "**/*.spec.ts", "dist"]
 }

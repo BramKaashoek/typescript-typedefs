@@ -25,6 +25,16 @@ Since we use decorators, [tsconfig must be configured](https://www.typescriptlan
 }
 ```
 
+As well as some babel plugins.
+
+```json
+ "plugins": [
+    "babel-plugin-transform-typescript-metadata",
+    ["@babel/plugin-proposal-decorators", { "legacy": true }],
+    ["@babel/plugin-proposal-class-properties", { "loose": true }]
+  ]
+```
+
 ## Exports
 
 This package exports
