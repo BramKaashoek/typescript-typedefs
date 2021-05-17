@@ -395,6 +395,40 @@ describe('Directives', (): void => {
   });
 });
 
+describe('Objects', (): void => {
+  beforeEach((): void => {
+    types.length = 0;
+    inputs.length = 0;
+    fields.length = 0;
+    interfaces.length = 0;
+  });
+  it('can handle union types', async (): Promise<void> => {
+    @Type()
+    class TestClass {
+      @Field({ type: Float, nullable: true })
+      testNumber: number | undefined;
+    }
+
+    expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
+      'type TestClass { testNumber: Float }',
+    );
+  });
+
+  // Object type occurs when the package is imported
+  it('can handle a value with Object type', async (): Promise<void> => {
+    @Type()
+    class TestClass {
+      @Field({ type: Int, nullable: true })
+      // eslint-disable-next-line @typescript-eslint/ban-types
+      testNumber: Object;
+    }
+
+    expect(removeWhiteSpace(generateTypeDefs([TestClass]))).to.equal(
+      'type TestClass { testNumber: Int }',
+    );
+  });
+});
+
 @Type()
 export class Course {
   @Field()

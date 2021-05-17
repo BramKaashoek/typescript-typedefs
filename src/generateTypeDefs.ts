@@ -157,6 +157,8 @@ const getGraphqlTypeFromType = (type, passedType = undefined): GraphQLScalarType
       return GraphQLInt;
     case ID.prototype:
       return GraphQLID;
+    case Object.prototype:
+      if (passedType) return getGraphqlTypeFromType(passedType);
     default:
       return type.name;
   }
