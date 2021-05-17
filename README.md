@@ -1,5 +1,9 @@
 # Typescript-Typedefs
 
+## Deprecation warning
+
+This package is deprecated and will not receive further support. Use [GraphQL Code Generator](https://www.graphql-code-generator.com/) instead.
+
 When using [Apollo GrapQL](https://www.npmjs.com/package/apollo-server) you need to define the typeDefs for your schema. When using [TypeScript](https://www.npmjs.com/package/typescript) you need to define interfaces to add proper typings. Because doing both of these things is rather a lot like code duplication, this package was created.
 
 With this package you can simply define your model as a class, use the provided [TypeScript decorators](https://www.typescriptlang.org/docs/handbook/decorators.html) and call the `generateTypeDefs` function, which will automatically generate your typeDefs for you.

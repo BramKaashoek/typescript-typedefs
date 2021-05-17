@@ -42,6 +42,7 @@
     "chai": "^4.2.0",
     "eslint": "5.16.0",
     "eslint-config-prettier": "^4.2.0",
+    "graphql": "^15.5.0",
     "mocha": "^6.1.4",
     "nodemon": "^1.19.0",
     "prettier": "^1.17.1",
